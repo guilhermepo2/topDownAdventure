@@ -18,18 +18,12 @@ public class PlayerController : MonoBehaviour {
     [Header("Movement Configuration")]
     public float timeToWalkOneTile = 0.5f;
 
-    [Header("Animation Configuration")]
-    public Sprite lookingUpSprite;
-    public Sprite lookingToTheSideSprite;
-    public Sprite lookingDownSprite;
-
 
     private EPlayerState m_currentPlayerState;
     private EDirection m_directionPlayerIsFacing;
     private Vector2 m_movement;
 
     // Animation Related
-    private SpriteRenderer m_spriteRenderer;
     private Animator m_animator;
     private const string STOPPED_UP_ANIMATION = "StoppedUp";
     private const string STOPPED_SIDE_ANIMATION = "StoppedSide";
@@ -39,7 +33,6 @@ public class PlayerController : MonoBehaviour {
     private const string DOWN_ANIMATION = "WalkingDown";
 
     private void Start() {
-        m_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         m_animator = GetComponentInChildren<Animator>();
         m_directionPlayerIsFacing = EDirection.Down;
     }
@@ -59,9 +52,33 @@ public class PlayerController : MonoBehaviour {
 
         
         if(m_movement != Vector2.zero && m_currentPlayerState == EPlayerState.Idle) {
+            MoveOneTile(m_movement);
+        } else if(m_movement == Vector2.zero && m_currentPlayerState == EPlayerState.Idle) {
+            StopAnimation();
+        }
+    }
+
+    private void MoveOneTile(Vector2 _direction) {
+        Vector2 movementPosition = transform.position;
+        movementPosition = movementPosition + _direction;
+
+        // Handling player look
+        if (_direction == Vector2.up) {
+            m_directionPlayerIsFacing = EDirection.Up;
+        } else if (_direction == Vector2.right) {
+            m_directionPlayerIsFacing = EDirection.Right;
+        } else if (_direction == Vector2.down) {
+            m_directionPlayerIsFacing = EDirection.Down;
+        } else if (_direction == Vector2.left) {
+            m_directionPlayerIsFacing = EDirection.Left;
+        }
+
+        Collider2D movementCollision = Physics2D.OverlapCircle(movementPosition, .25f);
+
+        if (movementCollision == null) {
             PlayAnimation(m_movement);
             StartCoroutine(MoveOneTileRoutine(m_movement));
-        } else if(m_movement == Vector2.zero && m_currentPlayerState == EPlayerState.Idle) {
+        } else {
             StopAnimation();
         }
     }
@@ -86,18 +103,14 @@ public class PlayerController : MonoBehaviour {
     private void PlayAnimation(Vector2 _direction) {
         if(_direction == Vector2.up) {
             m_animator.Play(UP_ANIMATION);
-            m_directionPlayerIsFacing = EDirection.Up;
         } else if(_direction == Vector2.right) {
             m_animator.Play(SIDE_ANIMATION);
             transform.localScale = new Vector3(Mathf.Sign(_direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            m_directionPlayerIsFacing = EDirection.Right;
         } else if(_direction == Vector2.down) {
             m_animator.Play(DOWN_ANIMATION);
-            m_directionPlayerIsFacing = EDirection.Down;
         } else if(_direction == Vector2.left) {
             m_animator.Play(SIDE_ANIMATION);
             transform.localScale = new Vector3(Mathf.Sign(_direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            m_directionPlayerIsFacing = EDirection.Left;
         }
     }
 
