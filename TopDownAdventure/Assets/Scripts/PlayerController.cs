@@ -123,8 +123,12 @@ public class PlayerController : MonoBehaviour {
                 m_animator.Play(STOPPED_DOWN_ANIMATION);
                 break;
             case EDirection.Right:
+                m_animator.Play(STOPPED_SIDE_ANIMATION);
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                break;
             case EDirection.Left:
                 m_animator.Play(STOPPED_SIDE_ANIMATION);
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                 break;
         }
     }
