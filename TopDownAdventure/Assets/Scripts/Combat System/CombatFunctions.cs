@@ -26,5 +26,11 @@ namespace CombatSystem {
         public static int CalculateSingleStat(int _baseValue, int _ivValue, int _evValue, int _level) {
             return Mathf.FloorToInt( (((2 * _baseValue + _ivValue + (_evValue / 4)) * _level) / 100) + 5 );
         }
+
+        public static int CalculateDamage(int _attackingPokemonLevel, int _movePower, int _attack, int _defense) {
+            // TO DO
+            // ADD MODIFIERS
+            return (((((2 * _attackingPokemonLevel) / 5) + 2) * _movePower * (_attack / _defense)) / 50) + 2;
+        }
     }
 }
