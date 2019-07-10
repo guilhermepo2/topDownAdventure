@@ -11,6 +11,8 @@ namespace CombatSystem {
             PlayerSelectingMove,
             ResolveTurns,
             TurnBeingResolved,
+            ProcessingTurnStack,
+            EndOfTurn,
             TurnsEnded,
             End,
         }
@@ -61,12 +63,14 @@ namespace CombatSystem {
         private EOptionsToSelect m_currentlySelectedOption;
         private EMovesToSelect m_currentlySelectedMove;
         private int m_selectedMoveIndex;
+        private Stack<Pokemon> m_turnStack;
 
         private void Start() {
             // Setting Up UI
             m_enemyPokemon = enemyPokemon.GetComponent<Pokemon>();
             m_enemyAI = enemyPokemon.GetComponent<AI.BaseEnemyAI>();
             m_playerPokemon = playerPokemon.GetComponent<Pokemon>();
+            m_turnStack = new Stack<Pokemon>();
             enemyUISkin.Assign(m_enemyPokemon);
             playerUISkin.Assign(m_playerPokemon);
             playerOptionsPanel.SetActive(false);
@@ -99,6 +103,17 @@ namespace CombatSystem {
                 case ECombatState.ResolveTurns:
                     m_combatState = ECombatState.TurnBeingResolved;
                     ResolveTurns();
+                    break;
+                case ECombatState.TurnBeingResolved:
+                    //
+                    break;
+                case ECombatState.ProcessingTurnStack:
+                    //
+                    ProcessTurnStack();
+                    break;
+                case ECombatState.EndOfTurn:
+                    //
+                    ProcessEndOfTurn();
                     break;
                 case ECombatState.TurnsEnded:
                     EndTurns();
@@ -285,6 +300,7 @@ namespace CombatSystem {
                         break;
                 }
 
+                movementsPanel.SetActive(false);
                 m_combatState = ECombatState.ResolveTurns;
             }
         }
@@ -292,47 +308,40 @@ namespace CombatSystem {
 
         #region RESOLVING TURNS
         private void ResolveTurns() {
+            m_turnStack.Clear();
+
             if(m_playerPokemon.BattleStats.speed >= m_enemyPokemon.BattleStats.speed) {
-                PlayerTurn();
-                EnemyTurn();
+                m_turnStack.Push(m_enemyPokemon);
+                m_turnStack.Push(m_playerPokemon);
             } else {
-                EnemyTurn();
-                PlayerTurn();
+                m_turnStack.Push(m_playerPokemon);
+                m_turnStack.Push(m_enemyPokemon);
             }
 
-            Debug.Log("Setting that turns ended....");
-            m_combatState = ECombatState.TurnsEnded;
+            m_combatState = ECombatState.ProcessingTurnStack;
         }
+        #endregion RESOLVING TURNS
 
-        private void PlayerTurn() {
-            Data.Move performedMove = m_playerPokemon.pokemonMoves[m_selectedMoveIndex];
-            Debug.Log($"{m_playerPokemon.pokemonName} used {performedMove.moveName}");
+        #region PROCESSING TURN STACK
+        private void ProcessTurnStack() {
+            Pokemon pokemonTakingTurn = m_turnStack.Pop();
+            Pokemon pokemonBeingActedOn;
 
-            switch(performedMove.moveCategory) {
-                case Data.Move.EDamageCategory.Physical:
-                    int damage = CombatFunctions.CalculateDamage(m_playerPokemon.currentLevel, performedMove.movePower, m_playerPokemon.BattleStats.attack, m_enemyPokemon.BattleStats.defense);
-                    Debug.Log($"{m_playerPokemon.pokemonName} caused {damage} damage!");
-
-                    m_enemyPokemon.currentHealth -= damage;
-                    break;
-                case Data.Move.EDamageCategory.Special:
-                    // NOT IMPLEMENTED
-                    break;
-                case Data.Move.EDamageCategory.Status:
-                    // NOT IMPLEMENTED
-                    break;
+            // getting performed move...
+            Data.Move performedMove;
+            if (pokemonTakingTurn == m_playerPokemon) {
+                performedMove = m_playerPokemon.pokemonMoves[m_selectedMoveIndex];
+                pokemonBeingActedOn = m_enemyPokemon;
+            } else {
+                performedMove = m_enemyAI.SelectMovement();
+                pokemonBeingActedOn = m_playerPokemon;
             }
-        }
-
-        private void EnemyTurn() {
-            Data.Move performedMove = m_enemyAI.SelectMovement();
-            Debug.Log($"{m_enemyPokemon.pokemonName} used {performedMove.moveName}");
 
             switch (performedMove.moveCategory) {
                 case Data.Move.EDamageCategory.Physical:
-                    int damage = CombatFunctions.CalculateDamage(m_enemyPokemon.currentLevel, performedMove.movePower, m_enemyPokemon.BattleStats.attack, m_playerPokemon.BattleStats.defense);
-                    Debug.Log($"{m_enemyPokemon.pokemonName} caused {damage} damage!");
-                    m_playerPokemon.currentHealth -= damage;
+                    int damage = CombatFunctions.CalculateDamage(pokemonTakingTurn.currentLevel, performedMove.movePower, pokemonTakingTurn.BattleStats.attack, pokemonBeingActedOn.BattleStats.defense);
+                    battleLogText.text = $"{pokemonTakingTurn.pokemonName} caused {damage} damage!";
+                    pokemonBeingActedOn.currentHealth -= damage;
                     break;
                 case Data.Move.EDamageCategory.Special:
                     // NOT IMPLEMENTED
@@ -341,8 +350,25 @@ namespace CombatSystem {
                     // NOT IMPLEMENTED
                     break;
             }
+
+            m_combatState = ECombatState.EndOfTurn;
         }
-        #endregion RESOLVING TURNS
+        #endregion PROCESSING TURN STACK
+
+        #region PROCESSING END OF TURN
+        private void ProcessEndOfTurn() {
+            if(Input.GetKeyDown(KeyCode.Return)) {
+                if(m_turnStack.Count > 0) {
+                    m_combatState = ECombatState.ProcessingTurnStack;
+                } else {
+                    m_combatState = ECombatState.TurnsEnded;
+                }
+
+                enemyUISkin.Assign(m_enemyPokemon);
+                playerUISkin.Assign(m_playerPokemon);
+            }
+        }
+        #endregion
 
         #region END TURNS
         private void EndTurns() {
@@ -360,12 +386,11 @@ namespace CombatSystem {
                 m_combatState = ECombatState.PlayerSelectingOption;
                 m_currentlySelectedOption = EOptionsToSelect.FIGHT;
                 playerOptionsPanel.SetActive(true);
+                battleLogText.text = "";
             }
 
-            // Updating UI
             enemyUISkin.Assign(m_enemyPokemon);
             playerUISkin.Assign(m_playerPokemon);
-            movementsPanel.SetActive(false);
         }
         #endregion
     }
