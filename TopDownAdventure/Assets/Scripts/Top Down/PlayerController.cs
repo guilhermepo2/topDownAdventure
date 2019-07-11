@@ -75,12 +75,27 @@ public class PlayerController : MonoBehaviour {
 
         Collider2D movementCollision = Physics2D.OverlapCircle(movementPosition, .25f);
 
-        if (movementCollision == null) {
+        if(movementCollision == null) {
             PlayAnimation(m_movement);
             StartCoroutine(MoveOneTileRoutine(m_movement));
-        } else {
-            StopAnimation();
+            return;
         }
+
+
+        // Checking for Triggers
+        ITriggerInteraction triggerInteraction = movementCollision.gameObject.GetComponent<ITriggerInteraction>();
+
+        if(triggerInteraction != null) {
+            triggerInteraction.Interact();
+
+            // Code Repetition
+            PlayAnimation(m_movement);
+            StartCoroutine(MoveOneTileRoutine(m_movement));
+            return;
+        }
+
+        // Collided and it wasn't with a trigger
+        StopAnimation();
     }
 
     private IEnumerator MoveOneTileRoutine(Vector2 _direction) {

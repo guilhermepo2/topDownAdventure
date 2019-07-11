@@ -341,7 +341,7 @@ namespace CombatSystem {
                 case Data.Move.EDamageCategory.Physical:
                     int damage = CombatFunctions.CalculateDamage(pokemonTakingTurn.currentLevel, performedMove.movePower, pokemonTakingTurn.BattleStats.attack, pokemonBeingActedOn.BattleStats.defense);
                     battleLogText.text = $"{pokemonTakingTurn.pokemonName} caused {damage} damage!";
-                    pokemonBeingActedOn.currentHealth -= damage;
+                    pokemonBeingActedOn.currentHealth = Mathf.Max(0, pokemonBeingActedOn.currentHealth - damage);
                     break;
                 case Data.Move.EDamageCategory.Special:
                     // NOT IMPLEMENTED
@@ -374,11 +374,9 @@ namespace CombatSystem {
         private void EndTurns() {
             // Check for win/loss condition
             if (m_enemyPokemon.currentHealth <= 0) {
-                m_enemyPokemon.currentHealth = 0;
                 m_combatState = ECombatState.End;
                 battleLogText.text = "You won!";
             } else if(m_playerPokemon.currentHealth <= 0) {
-                m_playerPokemon.currentHealth = 0;
                 m_combatState = ECombatState.End;
                 battleLogText.text = "You Lose!";
             } else {
@@ -388,9 +386,6 @@ namespace CombatSystem {
                 playerOptionsPanel.SetActive(true);
                 battleLogText.text = "";
             }
-
-            enemyUISkin.Assign(m_enemyPokemon);
-            playerUISkin.Assign(m_playerPokemon);
         }
         #endregion
     }
