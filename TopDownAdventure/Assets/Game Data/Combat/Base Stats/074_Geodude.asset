@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ea88f854909d844bca433a4374210d, type: 3}
+  m_Name: 074_Geodude
+  m_EditorClassIdentifier: 
+  statsType: 0
+  hp: 40
+  attack: 80
+  defense: 100
+  specialAttack: 30
+  specialDefense: 30
+  speed: 20

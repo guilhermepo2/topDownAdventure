@@ -32,6 +32,8 @@ namespace CombatSystem {
             Quirky = 25
         }
 
+        public Sprite topSidePokemonSprite;
+        public Sprite bottomSidePokemonSprite;
         public string pokemonName;
         public Data.Stats baseStats;
         public Data.Stats individualValues;

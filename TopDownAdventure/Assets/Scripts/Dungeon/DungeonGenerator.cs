@@ -15,6 +15,9 @@ namespace Dungeon {
         public GameObject roomsParent;
         public GameObject roomPrefab;
 
+        [Header("Dungeon Objects")]
+        public GameObject townStairs;
+
         private Vector2 m_worldSize = new Vector2(4, 4);
         private Vector2 m_roomSizeInTiles = new Vector2(9, 17);
         private Room[,] m_rooms;
@@ -41,6 +44,7 @@ namespace Dungeon {
             CreateRooms();
             CreateRoomInstances();
             AddCollisions();
+            InstantiateObjects();
         }
 
         #region ROOMS
@@ -107,7 +111,6 @@ namespace Dungeon {
         }
         #endregion ROOMS
 
-
         #region ROOMS INSTANCES
         private void CreateRoomInstances() {
             foreach(Room room in m_rooms) {
@@ -130,6 +133,7 @@ namespace Dungeon {
         }
         #endregion
 
+        #region COLLISIONS
         private void AddCollisions() {
             foreach(RoomInstance roomInstance in m_roomInstanceList) {
                 List<Vector3> tilePositions = roomInstance.TilePositionList;
@@ -158,5 +162,13 @@ namespace Dungeon {
                 collisionTilemap.SetTile(new Vector3Int(_x, _y, 0), collisionTile);
             }
         }
+        #endregion COLLISIONS
+
+        #region OBJECTS
+        private void InstantiateObjects() {
+            // Instantiating Stairs to go to the city...
+            Instantiate(townStairs, new Vector3(-0.5f, 0.5f, 0), Quaternion.identity);
+        }
+        #endregion OBJECTS
     }
 }
