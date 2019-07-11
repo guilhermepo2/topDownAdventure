@@ -7,21 +7,26 @@ namespace Dungeon {
     public class DungeonGenerator : MonoBehaviour {
         [Header("Tilemaps")]
         public Tilemap groundTilemap;
-        public Tile groundTile;
+        public Tilemap collisionTilemap;
         public RuleTile groundRuleTile;
+        public Tile collisionTile;
 
+        [Header("Game Objects")]
         public GameObject roomsParent;
         public GameObject roomPrefab;
 
         private Vector2 m_worldSize = new Vector2(4, 4);
-        public Vector2 roomSizeInTiles = new Vector2(9, 17);
+        private Vector2 m_roomSizeInTiles = new Vector2(9, 17);
         private Room[,] m_rooms;
+        private List<RoomInstance> m_roomInstanceList;
         private List<Vector2> m_takenPositions = new List<Vector2>();
         private int m_gridSizeX;
         private int m_gridSizeY;
-        private int m_numberOfRooms = 10;
+        private int m_numberOfRooms = 4;
 
         private void Awake() {
+            m_roomInstanceList = new List<RoomInstance>();
+
             if(m_numberOfRooms >= (m_worldSize.x * 2) * (m_worldSize.y * 2)) {
                 m_numberOfRooms = Mathf.RoundToInt((m_worldSize.x * 2) * (m_worldSize.y * 2));
             }
@@ -35,14 +40,7 @@ namespace Dungeon {
         private void GenerateLevel() {
             CreateRooms();
             CreateRoomInstances();
-
-            // Check Tiles and Add Borders
-            TileBase[] allTiles = groundTilemap.GetTilesBlock(groundTilemap.cellBounds);
-            Debug.Log($"{allTiles.Length}");
-            foreach(TileBase _tile in allTiles) {
-                Debug.Log($"tile: {_tile}");
-            }
-            // Check Tiles and Add Collisions
+            AddCollisions();
         }
 
         #region ROOMS
@@ -118,17 +116,47 @@ namespace Dungeon {
                 }
 
                 // Finding where the room will be
-                Vector3 roomPosition = new Vector3(room.gridPosition.x * (roomSizeInTiles.x),
-                    room.gridPosition.y * (roomSizeInTiles.y),
+                Vector3 roomPosition = new Vector3(room.gridPosition.x * (m_roomSizeInTiles.x),
+                    room.gridPosition.y * (m_roomSizeInTiles.y),
                     0);
                 Vector3Int roomPositionInt = new Vector3Int(Mathf.RoundToInt(roomPosition.x), Mathf.RoundToInt(roomPosition.y), 0);
 
                 // Instantiating the Room
                 RoomInstance roomInstance = Instantiate(roomPrefab, roomPosition, Quaternion.identity).GetComponent<RoomInstance>();
+                m_roomInstanceList.Add(roomInstance);
                 roomInstance.transform.parent = roomsParent.transform;
                 roomInstance.Setup(room.gridPosition, room.roomType, groundTilemap, groundRuleTile);
             }
         }
         #endregion
+
+        private void AddCollisions() {
+            foreach(RoomInstance roomInstance in m_roomInstanceList) {
+                List<Vector3> tilePositions = roomInstance.TilePositionList;
+                int count = 0;
+                foreach(Vector3 position in tilePositions) {
+                    AddCollisionOnTile((int) position.x, (int) position.y);
+                    count++;
+                }
+            }
+        }
+
+        private void AddCollisionOnTile(int _x, int _y) {
+            TileBase tile = groundTilemap.GetTile(new Vector3Int(_x, _y, 0));
+
+            if (
+                !groundTilemap.HasTile(new Vector3Int(_x + 1, _y, 0)) ||
+                !groundTilemap.HasTile(new Vector3Int(_x - 1, _y, 0)) ||
+                !groundTilemap.HasTile(new Vector3Int(_x, _y + 1, 0)) ||
+                !groundTilemap.HasTile(new Vector3Int(_x, _y - 1, 0)) ||
+
+                !groundTilemap.HasTile(new Vector3Int(_x - 1, _y - 1, 0)) ||
+                !groundTilemap.HasTile(new Vector3Int(_x - 1, _y + 1, 0)) ||
+                !groundTilemap.HasTile(new Vector3Int(_x + 1, _y + 1, 0)) ||
+                !groundTilemap.HasTile(new Vector3Int(_x + 1, _y - 1, 0))
+                ) {
+                collisionTilemap.SetTile(new Vector3Int(_x, _y, 0), collisionTile);
+            }
+        }
     }
 }

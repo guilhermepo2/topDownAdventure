@@ -12,8 +12,12 @@ namespace Dungeon {
 
         private Tilemap m_groundTilemap;
         private RuleTile m_groundTile;
+        private List<Vector3> m_tilePositionList;
+        public List<Vector3> TilePositionList { get { return m_tilePositionList;  } }
 
         public void Setup(Vector2 _gridPosition, Room.ERoomType _roomType, Tilemap _groundTilemap, RuleTile _groundTile) {
+            m_tilePositionList = new List<Vector3>();
+
             this.gridPosition = _gridPosition;
             this.roomType = _roomType;
 
@@ -37,6 +41,7 @@ namespace Dungeon {
         private void GenerateTile(int _x, int _y) {
             Vector3 spawnPosition = PositionFromTileGrid(_x, _y);
             Vector3Int spawnPositionInt = new Vector3Int(Mathf.RoundToInt(spawnPosition.x), Mathf.RoundToInt(spawnPosition.y), 0);
+            m_tilePositionList.Add(spawnPositionInt);
             m_groundTilemap.SetTile(spawnPositionInt, m_groundTile);
         }
 
