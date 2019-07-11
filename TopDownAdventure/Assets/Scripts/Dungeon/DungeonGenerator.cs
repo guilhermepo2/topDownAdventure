@@ -8,6 +8,7 @@ namespace Dungeon {
         [Header("Tilemaps")]
         public Tilemap groundTilemap;
         public Tile groundTile;
+        public RuleTile groundRuleTile;
 
         public GameObject roomsParent;
         public GameObject roomPrefab;
@@ -36,6 +37,11 @@ namespace Dungeon {
             CreateRoomInstances();
 
             // Check Tiles and Add Borders
+            TileBase[] allTiles = groundTilemap.GetTilesBlock(groundTilemap.cellBounds);
+            Debug.Log($"{allTiles.Length}");
+            foreach(TileBase _tile in allTiles) {
+                Debug.Log($"tile: {_tile}");
+            }
             // Check Tiles and Add Collisions
         }
 
@@ -120,7 +126,7 @@ namespace Dungeon {
                 // Instantiating the Room
                 RoomInstance roomInstance = Instantiate(roomPrefab, roomPosition, Quaternion.identity).GetComponent<RoomInstance>();
                 roomInstance.transform.parent = roomsParent.transform;
-                roomInstance.Setup(room.gridPosition, room.roomType, groundTilemap, groundTile);
+                roomInstance.Setup(room.gridPosition, room.roomType, groundTilemap, groundRuleTile);
             }
         }
         #endregion

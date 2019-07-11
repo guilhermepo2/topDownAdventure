@@ -11,9 +11,9 @@ namespace Dungeon {
         public Room.ERoomType roomType;
 
         private Tilemap m_groundTilemap;
-        private Tile m_groundTile;
+        private RuleTile m_groundTile;
 
-        public void Setup(Vector2 _gridPosition, Room.ERoomType _roomType, Tilemap _groundTilemap, Tile _groundTile) {
+        public void Setup(Vector2 _gridPosition, Room.ERoomType _roomType, Tilemap _groundTilemap, RuleTile _groundTile) {
             this.gridPosition = _gridPosition;
             this.roomType = _roomType;
 
