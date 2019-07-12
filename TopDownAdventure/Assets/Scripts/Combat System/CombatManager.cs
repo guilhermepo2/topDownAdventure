@@ -131,6 +131,9 @@ namespace CombatSystem {
                 case ECombatState.TurnsEnded:
                     EndTurns();
                     break;
+                case ECombatState.End:
+                    CombatEnded();
+                    break;
             }
         }
 
@@ -340,6 +343,12 @@ namespace CombatSystem {
             Pokemon pokemonTakingTurn = m_turnStack.Pop();
             Pokemon pokemonBeingActedOn;
 
+            if(pokemonTakingTurn.currentHealth <= 0) {
+                battleLogText.text = $"{pokemonTakingTurn.pokemonName} fainted!";
+                m_combatState = ECombatState.EndOfTurn;
+                return;
+            }
+
             // getting performed move...
             Data.Move performedMove;
             if (pokemonTakingTurn == m_playerPokemon) {
@@ -401,5 +410,12 @@ namespace CombatSystem {
             }
         }
         #endregion
+
+        #region COMBAT ENDED
+        private void CombatEnded() {
+            DependencyManager.Instance.LevelManager.UnloadLevel(DependencyManager.BATTLE_SCENE);
+            DependencyManager.Instance.TopDown.ActivateTopDown();
+        }
+        #endregion COMBAT ENDED
     }
 }

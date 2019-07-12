@@ -6,6 +6,6 @@ public class SceneTransitionStairs : MonoBehaviour, ITriggerInteraction {
     public int levelToTransitionTo;
 
     public void Interact() {
-        LevelManager.instance.LoadLevel(levelToTransitionTo);
+        DependencyManager.Instance.LevelManager.LoadLevel(levelToTransitionTo);
     }
 }

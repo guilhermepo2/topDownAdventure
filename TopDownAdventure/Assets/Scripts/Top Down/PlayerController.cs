@@ -6,7 +6,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
     public enum EPlayerState {
         Idle,
-        Moving
+        Moving,
+        InBattle,
     }
 
     public enum EDirection {
@@ -116,6 +117,7 @@ public class PlayerController : MonoBehaviour {
 
         transform.position = destinationPosition;
         PlayerMoved?.Invoke();
+
         yield return null;
         m_currentPlayerState = EPlayerState.Idle;
     }
@@ -151,5 +153,18 @@ public class PlayerController : MonoBehaviour {
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                 break;
         }
+    }
+
+    // -----------------------------------------------------------
+    // Battle
+    // These could be actions and events...
+    public void PlayerEnteredBattle() {
+        StopAllCoroutines();
+        StopAnimation();
+        m_currentPlayerState = EPlayerState.InBattle;
+    }
+
+    public void PlayerExitedBattle() {
+        m_currentPlayerState = EPlayerState.Idle;
     }
 }

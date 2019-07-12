@@ -23,6 +23,8 @@ namespace Dungeon {
 
         private void ProcessRandomEncounter() {
             if(Random.value < randomEncounterChance) {
+                DependencyManager.Instance.TopDown.HaltTopDown();
+
                 GameObject battlingPokemons = new GameObject("Battling Pokemons");
                 GameObject playerPokemon = new GameObject("Player Pokemon");
                 GameObject enemyPokemon = new GameObject("Enemy Pokemon");
@@ -62,7 +64,7 @@ namespace Dungeon {
                 battlingEnemyPokemon.isFainted = wildPokemon.isFainted;
 
                 DontDestroyOnLoad(battlingPokemons);
-                LevelManager.instance.LoadLevel(3);
+                DependencyManager.Instance.LevelManager.LoadLevelAdditive(DependencyManager.BATTLE_SCENE);
             }
         }
     }
