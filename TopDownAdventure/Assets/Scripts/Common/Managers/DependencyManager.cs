@@ -1,11 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DependencyManager : MonoBehaviour {
     // Constant strings for scenes
     public static int BATTLE_SCENE = 3;
+    private const string PLAYER_POKEMON = "Player Pokemon";
+    private const string ENEMY_POKEMON = "Enemy Pokemon";
 
+    private CombatSystem.Pokemon m_playerPokemon;
+    private CombatSystem.Pokemon m_enemyPokemon;
+
+    /*
+     * Managers that require some kind of configuration WILL NOT be instantiated by the Dependency Manager! 
+     */
+
+    // Dependency Manager
     private static DependencyManager m_instance;
     public static DependencyManager Instance {
         get {
@@ -21,6 +32,7 @@ public class DependencyManager : MonoBehaviour {
         }
     }
 
+    // Top Down Manager
     private TopDownManager m_topDownManagerReference;
     public TopDownManager TopDown {
         get {
@@ -28,10 +40,11 @@ public class DependencyManager : MonoBehaviour {
         }
     }
 
+    // Level Manager
     private LevelManager m_levelManagerReference;
     public LevelManager LevelManager {
         get {
-            if(m_levelManagerReference == null) {
+            if (m_levelManagerReference == null) {
                 GameObject levelManagerObject = new GameObject("Level Manager");
                 levelManagerObject.AddComponent(typeof(LevelManager));
                 m_levelManagerReference = levelManagerObject.GetComponent<LevelManager>();
@@ -42,12 +55,31 @@ public class DependencyManager : MonoBehaviour {
         }
     }
 
-
+    // Encounter Manager
     private Dungeon.EncounterManager m_encounterManager;
+    public Dungeon.EncounterManager Encounter {
+        get {
+            return m_encounterManager;
+        }
+    }
 
-
+    // Dungeon Generator
     private Dungeon.DungeonGenerator m_dungeonGenerator;
+    public Dungeon.DungeonGenerator Dungeon {
+        get {
+            return m_dungeonGenerator;
+        }
+    }
 
+    // Combat Manager
+    private CombatSystem.CombatManager m_combatManager;
+    public CombatSystem.CombatManager Combat {
+        get {
+            return m_combatManager;
+        }
+    }
+
+    // ----------------------------------------------------------------------------
     private void Awake() {
         if (m_instance == null) {
             m_instance = this;
@@ -57,8 +89,48 @@ public class DependencyManager : MonoBehaviour {
         }
     }
 
+    private void Start() {
+        Debug.Log("Dependency Manager start...");
+        m_playerPokemon = GameObject.Find(PLAYER_POKEMON).GetComponent<CombatSystem.Pokemon>();
+        m_enemyPokemon = GameObject.Find(ENEMY_POKEMON).GetComponent<CombatSystem.Pokemon>();
+        SceneManager.sceneLoaded += LevelLoaded;
+    }
+
+    private void LevelLoaded(Scene _scene, LoadSceneMode _mode) {
+        FetchDependencies();
+    }
+
     private void FetchDependencies() {
         m_topDownManagerReference = FindObjectOfType<TopDownManager>();
         m_levelManagerReference = FindObjectOfType<LevelManager>();
+        m_encounterManager = FindObjectOfType<Dungeon.EncounterManager>();
+        m_dungeonGenerator = FindObjectOfType<Dungeon.DungeonGenerator>();
+        m_combatManager = FindObjectOfType<CombatSystem.CombatManager>();
+    }
+
+    // ----------------------------------------------------------------------------
+    // Handling Pokemons on the Dependency Manager
+
+    public void SetEnemyPokemon(CombatSystem.Pokemon _pokemon) {
+        m_enemyPokemon.topSidePokemonSprite = _pokemon.topSidePokemonSprite;
+        m_enemyPokemon.bottomSidePokemonSprite = _pokemon.bottomSidePokemonSprite;
+        m_enemyPokemon.pokemonName = _pokemon.pokemonName;
+        m_enemyPokemon.baseStats = _pokemon.baseStats;
+        m_enemyPokemon.individualValues = _pokemon.individualValues;
+        m_enemyPokemon.effortValues = _pokemon.effortValues;
+        m_enemyPokemon.nature = _pokemon.nature;
+        m_enemyPokemon.pokemonMoves = _pokemon.pokemonMoves;
+        m_enemyPokemon.currentLevel = _pokemon.currentLevel;
+        m_enemyPokemon.currentHealth = _pokemon.currentHealth;
+        m_enemyPokemon.currentExperience = _pokemon.currentExperience;
+        m_enemyPokemon.isFainted = _pokemon.isFainted;
+    }
+
+    public CombatSystem.Pokemon GetPlayerPokemon() {
+        return m_playerPokemon;
+    }
+
+    public CombatSystem.Pokemon GetEnemyPokemon() {
+        return m_enemyPokemon;
     }
 }

@@ -67,14 +67,10 @@ namespace CombatSystem {
 
         private void Start() {
             // Checking if it was transitioned from Dungeon
-            GameObject battlingPokemons = GameObject.Find("Battling Pokemons");
-            if(battlingPokemons) {
-                Destroy(enemyPokemon);
-                Destroy(playerPokemon);
-
-                enemyPokemon = GameObject.Find("Enemy Pokemon");
-                playerPokemon = GameObject.Find("Player Pokemon");
-            }
+            Destroy(enemyPokemon);
+            Destroy(playerPokemon);
+            playerPokemon = DependencyManager.Instance.GetPlayerPokemon().gameObject;
+            enemyPokemon = DependencyManager.Instance.GetEnemyPokemon().gameObject;
 
             // Setting Up UI
             m_enemyPokemon = enemyPokemon.GetComponent<Pokemon>();
