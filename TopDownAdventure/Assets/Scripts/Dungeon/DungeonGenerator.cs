@@ -5,6 +5,10 @@ using UnityEngine.Tilemaps;
 
 namespace Dungeon {
     public class DungeonGenerator : MonoBehaviour {
+        [Header("Dungeon Configuration")]
+        public Vector2 worldSize = new Vector2(4, 4);
+        public int numberOfRooms = 4;
+
         [Header("Tilemaps")]
         public Tilemap groundTilemap;
         public Tilemap collisionTilemap;
@@ -18,24 +22,22 @@ namespace Dungeon {
         [Header("Dungeon Objects")]
         public GameObject townStairs;
 
-        private Vector2 m_worldSize = new Vector2(4, 4);
         private Vector2 m_roomSizeInTiles = new Vector2(9, 17);
         private Room[,] m_rooms;
         private List<RoomInstance> m_roomInstanceList;
         private List<Vector2> m_takenPositions = new List<Vector2>();
         private int m_gridSizeX;
         private int m_gridSizeY;
-        private int m_numberOfRooms = 4;
 
         private void Awake() {
             m_roomInstanceList = new List<RoomInstance>();
 
-            if(m_numberOfRooms >= (m_worldSize.x * 2) * (m_worldSize.y * 2)) {
-                m_numberOfRooms = Mathf.RoundToInt((m_worldSize.x * 2) * (m_worldSize.y * 2));
+            if(numberOfRooms >= (worldSize.x * 2) * (worldSize.y * 2)) {
+                numberOfRooms = Mathf.RoundToInt((worldSize.x * 2) * (worldSize.y * 2));
             }
 
-            m_gridSizeX = Mathf.RoundToInt(m_worldSize.x);
-            m_gridSizeY = Mathf.RoundToInt(m_worldSize.y);
+            m_gridSizeX = Mathf.RoundToInt(worldSize.x);
+            m_gridSizeY = Mathf.RoundToInt(worldSize.y);
 
             GenerateLevel();
         }
@@ -59,8 +61,8 @@ namespace Dungeon {
             float randomToCompareEnd = 0.1f;
 
             // Creating Rooms
-            for(int i = 0; i < m_numberOfRooms; i++) {
-                float percentage = ( (float) i / (float) (m_numberOfRooms-1));
+            for(int i = 0; i < numberOfRooms; i++) {
+                float percentage = ( (float) i / (float) (numberOfRooms - 1));
                 randomToCompare = Mathf.Lerp(randomToCompareStart, randomToCompareEnd, percentage);
                 positionToCheck = GetNewPosition();
 
