@@ -66,13 +66,26 @@ namespace CombatSystem {
         private Stack<Pokemon> m_turnStack;
 
         private void Start() {
+            // Checking if it was transitioned from Dungeon
+            GameObject battlingPokemons = GameObject.Find("Battling Pokemons");
+            if(battlingPokemons) {
+                Destroy(enemyPokemon);
+                Destroy(playerPokemon);
+
+                enemyPokemon = GameObject.Find("Enemy Pokemon");
+                playerPokemon = GameObject.Find("Player Pokemon");
+            }
+
             // Setting Up UI
             m_enemyPokemon = enemyPokemon.GetComponent<Pokemon>();
             m_enemyAI = enemyPokemon.GetComponent<AI.BaseEnemyAI>();
             m_playerPokemon = playerPokemon.GetComponent<Pokemon>();
+            m_enemyPokemon.CalculateStats();
+            m_playerPokemon.CalculateStats();
+
             m_turnStack = new Stack<Pokemon>();
-            enemyUISkin.Assign(m_enemyPokemon);
-            playerUISkin.Assign(m_playerPokemon);
+            enemyUISkin.Assign(m_enemyPokemon, false);
+            playerUISkin.Assign(m_playerPokemon, true);
             playerOptionsPanel.SetActive(false);
             movementsPanel.SetActive(false);
             battleLogText.text = "";
@@ -364,8 +377,8 @@ namespace CombatSystem {
                     m_combatState = ECombatState.TurnsEnded;
                 }
 
-                enemyUISkin.Assign(m_enemyPokemon);
-                playerUISkin.Assign(m_playerPokemon);
+                enemyUISkin.Assign(m_enemyPokemon, false);
+                playerUISkin.Assign(m_playerPokemon, true);
             }
         }
         #endregion

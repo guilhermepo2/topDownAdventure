@@ -13,7 +13,13 @@ namespace CombatSystem.UI {
         public TextMeshProUGUI pokemonHp;
         public TextMeshProUGUI pokemonExp;
 
-        public void Assign(Pokemon _pokemon) {
+        public void Assign(Pokemon _pokemon, bool _isBottom) {
+            if(_isBottom) {
+                pokemonSprite.sprite = _pokemon.bottomSidePokemonSprite;
+            } else {
+                pokemonSprite.sprite = _pokemon.topSidePokemonSprite;
+            }
+
             this.pokemonName.text = _pokemon.pokemonName;
             this.pokemonLevel.text = $"L{_pokemon.currentLevel}";
             this.pokemonHp.text = $"HP {_pokemon.currentHealth}/{_pokemon.BattleStats.maxHp}";

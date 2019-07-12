@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,6 +32,9 @@ public class PlayerController : MonoBehaviour {
     private const string UP_ANIMATION = "WalkingUp";
     private const string SIDE_ANIMATION = "WalkingSide";
     private const string DOWN_ANIMATION = "WalkingDown";
+
+    // Actions and Events
+    public event Action PlayerMoved;
 
     private void Start() {
         m_animator = GetComponentInChildren<Animator>();
@@ -111,6 +115,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         transform.position = destinationPosition;
+        PlayerMoved?.Invoke();
         yield return null;
         m_currentPlayerState = EPlayerState.Idle;
     }

@@ -44,13 +44,13 @@ namespace CombatSystem {
         public int currentLevel;
         public int currentHealth;
         public int currentExperience;
+        public bool isFainted;
 
         private Data.InBattleStats m_inBattleStats;
         public Data.InBattleStats BattleStats { get { return m_inBattleStats;  } }
 
-        private void Awake() {
+        public void CalculateStats() {
             m_inBattleStats = CombatFunctions.CalculateInBattleStats(baseStats, individualValues, effortValues, currentLevel);
-
             currentHealth = m_inBattleStats.maxHp;
         }
     }
