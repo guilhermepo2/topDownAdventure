@@ -413,8 +413,10 @@ namespace CombatSystem {
 
         #region COMBAT ENDED
         private void CombatEnded() {
-            DependencyManager.Instance.LevelManager.UnloadLevel(DependencyManager.BATTLE_SCENE);
-            DependencyManager.Instance.TopDown.ActivateTopDown();
+            if(Input.GetKeyDown(KeyCode.Return)) {
+                DependencyManager.Instance.LevelManager.UnloadLevel(DependencyManager.BATTLE_SCENE);
+                DependencyManager.Instance.TopDown.ActivateTopDown();
+            }
         }
         #endregion COMBAT ENDED
     }
