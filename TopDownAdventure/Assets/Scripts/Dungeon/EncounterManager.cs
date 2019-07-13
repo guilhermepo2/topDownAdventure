@@ -9,27 +9,31 @@ namespace Dungeon {
         public float randomEncounterChance = 0.05f;
 
         [Header("Random Encounter - Pokemons and IV/EV")]
-        public GameObject[] wildPokemons;
+        public CombatSystem.Pokemon[] wildPokemons;
         public CombatSystem.Data.Stats[] ivPool;
         public CombatSystem.Data.Stats[] evPool;
 
-        private CombatSystem.Pokemon m_playerPokemon;
+        private CombatSystem.BattlePokemon m_playerPokemon;
 
         private void Start() {
             PlayerController playerReference = FindObjectOfType<PlayerController>();
             playerReference.PlayerMoved += ProcessRandomEncounter;
-            m_playerPokemon = playerReference.gameObject.GetComponentInChildren<CombatSystem.Pokemon>();
+            m_playerPokemon = playerReference.gameObject.GetComponentInChildren<CombatSystem.BattlePokemon>();
         }
 
         private void ProcessRandomEncounter() {
             if(Random.value < randomEncounterChance) {
                 DependencyManager.Instance.TopDown.HaltTopDown();
 
-                CombatSystem.Pokemon wildPokemon = wildPokemons.RandomOrDefault().GetComponent<CombatSystem.Pokemon>();
+                CombatSystem.BattlePokemon wildPokemon = DependencyManager.Instance.GetEnemyPokemon();
+                wildPokemon.basePokemon = wildPokemons.RandomOrDefault();
                 wildPokemon.individualValues = ivPool.RandomOrDefault();
                 wildPokemon.effortValues = evPool.RandomOrDefault();
-                DependencyManager.Instance.SetEnemyPokemon(wildPokemon);
 
+                // Do Stuff with the level Here....
+                wildPokemon.currentLevel = 3;
+
+                DependencyManager.Instance.SetEnemyPokemon(wildPokemon);
                 DependencyManager.Instance.LevelManager.LoadLevelAdditive(DependencyManager.BATTLE_SCENE);
             }
         }

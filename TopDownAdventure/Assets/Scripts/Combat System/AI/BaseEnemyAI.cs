@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace CombatSystem.AI {
     public class BaseEnemyAI : MonoBehaviour {
-        protected Pokemon m_pokemonReference;
+        protected BattlePokemon m_pokemonReference;
 
         private void Start() {
-            m_pokemonReference = GetComponent<Pokemon>();    
+            m_pokemonReference = GetComponent<BattlePokemon>();    
         }
 
         public virtual Data.Move SelectMovement() {

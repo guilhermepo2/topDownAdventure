@@ -9,8 +9,8 @@ public class DependencyManager : MonoBehaviour {
     private const string PLAYER_POKEMON = "Player Pokemon";
     private const string ENEMY_POKEMON = "Enemy Pokemon";
 
-    private CombatSystem.Pokemon m_playerPokemon;
-    private CombatSystem.Pokemon m_enemyPokemon;
+    private CombatSystem.BattlePokemon m_playerPokemon;
+    private CombatSystem.BattlePokemon m_enemyPokemon;
 
     /*
      * Managers that require some kind of configuration WILL NOT be instantiated by the Dependency Manager! 
@@ -91,8 +91,8 @@ public class DependencyManager : MonoBehaviour {
 
     private void Start() {
         Debug.Log("Dependency Manager start...");
-        m_playerPokemon = GameObject.Find(PLAYER_POKEMON).GetComponent<CombatSystem.Pokemon>();
-        m_enemyPokemon = GameObject.Find(ENEMY_POKEMON).GetComponent<CombatSystem.Pokemon>();
+        m_playerPokemon = GameObject.Find(PLAYER_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
+        m_enemyPokemon = GameObject.Find(ENEMY_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
         SceneManager.sceneLoaded += LevelLoaded;
     }
 
@@ -111,11 +111,8 @@ public class DependencyManager : MonoBehaviour {
     // ----------------------------------------------------------------------------
     // Handling Pokemons on the Dependency Manager
 
-    public void SetEnemyPokemon(CombatSystem.Pokemon _pokemon) {
-        m_enemyPokemon.topSidePokemonSprite = _pokemon.topSidePokemonSprite;
-        m_enemyPokemon.bottomSidePokemonSprite = _pokemon.bottomSidePokemonSprite;
-        m_enemyPokemon.pokemonName = _pokemon.pokemonName;
-        m_enemyPokemon.baseStats = _pokemon.baseStats;
+    public void SetEnemyPokemon(CombatSystem.BattlePokemon _pokemon) {
+        m_enemyPokemon.basePokemon = _pokemon.basePokemon;
         m_enemyPokemon.individualValues = _pokemon.individualValues;
         m_enemyPokemon.effortValues = _pokemon.effortValues;
         m_enemyPokemon.nature = _pokemon.nature;
@@ -126,11 +123,11 @@ public class DependencyManager : MonoBehaviour {
         m_enemyPokemon.isFainted = _pokemon.isFainted;
     }
 
-    public CombatSystem.Pokemon GetPlayerPokemon() {
+    public CombatSystem.BattlePokemon GetPlayerPokemon() {
         return m_playerPokemon;
     }
 
-    public CombatSystem.Pokemon GetEnemyPokemon() {
+    public CombatSystem.BattlePokemon GetEnemyPokemon() {
         return m_enemyPokemon;
     }
 }

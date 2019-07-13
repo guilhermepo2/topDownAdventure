@@ -34,9 +34,9 @@ namespace CombatSystem {
         [Header("Pokemons")]
         public GameObject enemyPokemon;
         public GameObject playerPokemon;
-        private Pokemon m_enemyPokemon;
+        private BattlePokemon m_enemyPokemon;
         private AI.BaseEnemyAI m_enemyAI;
-        private Pokemon m_playerPokemon;
+        private BattlePokemon m_playerPokemon;
 
         [Header("UI Related")]
         public UI.PokemonUISkin enemyUISkin;
@@ -63,7 +63,7 @@ namespace CombatSystem {
         private EOptionsToSelect m_currentlySelectedOption;
         private EMovesToSelect m_currentlySelectedMove;
         private int m_selectedMoveIndex;
-        private Stack<Pokemon> m_turnStack;
+        private Stack<BattlePokemon> m_turnStack;
 
         private void Start() {
             // Checking if it was transitioned from Dungeon
@@ -73,13 +73,13 @@ namespace CombatSystem {
             enemyPokemon = DependencyManager.Instance.GetEnemyPokemon().gameObject;
 
             // Setting Up UI
-            m_enemyPokemon = enemyPokemon.GetComponent<Pokemon>();
+            m_enemyPokemon = enemyPokemon.GetComponent<BattlePokemon>();
             m_enemyAI = enemyPokemon.GetComponent<AI.BaseEnemyAI>();
-            m_playerPokemon = playerPokemon.GetComponent<Pokemon>();
+            m_playerPokemon = playerPokemon.GetComponent<BattlePokemon>();
             m_enemyPokemon.CalculateStats();
             m_playerPokemon.CalculateStats();
 
-            m_turnStack = new Stack<Pokemon>();
+            m_turnStack = new Stack<BattlePokemon>();
             enemyUISkin.Assign(m_enemyPokemon, false);
             playerUISkin.Assign(m_playerPokemon, true);
             playerOptionsPanel.SetActive(false);
@@ -95,7 +95,7 @@ namespace CombatSystem {
         }
 
         private void ProcessBattleIntro() {
-            battleLogText.text = $"Enemy {m_enemyPokemon.pokemonName} wants to battle!";
+            battleLogText.text = $"Enemy {m_enemyPokemon.PokemonName} wants to battle!";
         }
 
         private void Update() {
@@ -336,11 +336,11 @@ namespace CombatSystem {
 
         #region PROCESSING TURN STACK
         private void ProcessTurnStack() {
-            Pokemon pokemonTakingTurn = m_turnStack.Pop();
-            Pokemon pokemonBeingActedOn;
+            BattlePokemon pokemonTakingTurn = m_turnStack.Pop();
+            BattlePokemon pokemonBeingActedOn;
 
             if(pokemonTakingTurn.currentHealth <= 0) {
-                battleLogText.text = $"{pokemonTakingTurn.pokemonName} fainted!";
+                battleLogText.text = $"{pokemonTakingTurn.PokemonName} fainted!";
                 m_combatState = ECombatState.EndOfTurn;
                 return;
             }
@@ -358,7 +358,7 @@ namespace CombatSystem {
             switch (performedMove.moveCategory) {
                 case Data.Move.EDamageCategory.Physical:
                     int damage = CombatFunctions.CalculateDamage(pokemonTakingTurn.currentLevel, performedMove.movePower, pokemonTakingTurn.BattleStats.attack, pokemonBeingActedOn.BattleStats.defense);
-                    battleLogText.text = $"{pokemonTakingTurn.pokemonName} caused {damage} damage!";
+                    battleLogText.text = $"{pokemonTakingTurn.PokemonName} caused {damage} damage!";
                     pokemonBeingActedOn.currentHealth = Mathf.Max(0, pokemonBeingActedOn.currentHealth - damage);
                     break;
                 case Data.Move.EDamageCategory.Special:
