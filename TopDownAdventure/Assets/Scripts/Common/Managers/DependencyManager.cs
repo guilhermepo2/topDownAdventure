@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class DependencyManager : MonoBehaviour {
     // Constant strings for scenes
-    public static int BATTLE_SCENE = 3;
+    public static int MAIN_MENU_SCENE = 0;
+    public static int BATTLE_SCENE = 4;
     private const string PLAYER_POKEMON = "Player Pokemon";
     private const string ENEMY_POKEMON = "Enemy Pokemon";
 
@@ -79,6 +80,14 @@ public class DependencyManager : MonoBehaviour {
         }
     }
 
+    // Game Controller
+    private GameController m_gameController;
+    public GameController Controller {
+        get {
+            return m_gameController;
+        }
+    }
+
     // ----------------------------------------------------------------------------
     private void Awake() {
         if (m_instance == null) {
@@ -106,6 +115,7 @@ public class DependencyManager : MonoBehaviour {
         m_encounterManager = FindObjectOfType<Dungeon.EncounterManager>();
         m_dungeonGenerator = FindObjectOfType<Dungeon.DungeonGenerator>();
         m_combatManager = FindObjectOfType<CombatSystem.CombatManager>();
+        m_gameController = FindObjectOfType<GameController>();
     }
 
     // ----------------------------------------------------------------------------

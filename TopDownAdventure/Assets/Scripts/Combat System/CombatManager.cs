@@ -216,8 +216,9 @@ namespace CombatSystem {
                         // TO DO
                         break;
                     case EOptionsToSelect.RUN:
-                        Debug.Log("Player Selected RUN");
-                        // Just resolve the fight and end
+                        playerOptionsPanel.SetActive(false);
+                        battleLogText.text = $"{m_playerPokemon.PokemonName} run away safely...";
+                        m_combatState = ECombatState.End;
                         break;
                 }
             }
