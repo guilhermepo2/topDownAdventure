@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BattleScene.unity
     guid: 1d0cf2ed6594aea40aebdb3dbf1c0901
+  - enabled: 1
+    path: Assets/Scenes/New Bark Town/Lab.unity
+    guid: a39ff24eac0ce7f41855f0b291c037b6
   m_configObjects: {}
