@@ -197,6 +197,9 @@ public class PlayerController : MonoBehaviour {
                 case Item.EItemType.BossRoomKey:
                     DependencyManager.Instance.DungeonController.PlayerHasBossRoomKey = true;
                     break;
+                case Item.EItemType.GoalRoomKey:
+                    DependencyManager.Instance.DungeonController.PlayerHasGoalRoomKey = true;
+                    break;
             }
 
             Destroy(itemCollided.gameObject);

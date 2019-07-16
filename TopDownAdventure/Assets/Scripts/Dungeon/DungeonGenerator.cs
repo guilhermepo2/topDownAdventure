@@ -21,6 +21,8 @@ namespace Dungeon {
         public GameObject roomsParent;
         public GameObject roomPrefab;
         public GameObject doorPrefab;
+        public GameObject bossRoomKey;
+        public GameObject goalRoomKey;
 
         [Header("Dungeon Objects")]
         public GameObject townStairs;
@@ -252,6 +254,27 @@ namespace Dungeon {
         private void InstantiateObjects() {
             // Instantiating Stairs to go to the city...
             Instantiate(townStairs, new Vector3(-0.5f, 0.5f, 0), Quaternion.identity);
+
+            // Instantiate Boss Room Key anywhere in the dungeon
+            RoomInstance randomRoom = m_roomInstanceList.Where(room => {
+                return room.roomType == Room.ERoomType.Regular;
+            }).ToList().RandomOrDefault();
+            int positionX = Random.Range(2, (int)m_roomSizeInTiles.x - 2);
+            int positionY = Random.Range(2, (int)m_roomSizeInTiles.y - 2);
+            randomRoom.InstantiateObject(bossRoomKey, positionX, positionY);
+
+            // Instantiate Goal Room Key on Boss Room
+            RoomInstance goalRoom = m_roomInstanceList.Where(room => {
+                return room.roomType == Room.ERoomType.BossRoom;
+            }).First();
+
+            if(goalRoom == null) {
+                return;
+            }
+
+            positionX = Random.Range(2, (int)m_roomSizeInTiles.x - 2);
+            positionY = Random.Range(2, (int)m_roomSizeInTiles.y - 2);
+            goalRoom.InstantiateObject(goalRoomKey, positionX, positionY);
         }
         #endregion OBJECTS
     }

@@ -120,7 +120,11 @@ namespace Dungeon {
             } else if(roomType == Room.ERoomType.GoalRoom) {
                 instantiatedDoor.doorType = Door.EDoorType.GoalRoom;
             }
+        }
 
+        public void InstantiateObject(GameObject _prefab, int _x, int _y) {
+            Vector3 position = PositionFromTileGrid(_x, _y);
+            Instantiate(_prefab, position + new Vector3(0.5f, 0.25f, 0), Quaternion.identity);
         }
     }
 }

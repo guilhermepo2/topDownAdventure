@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Item : MonoBehaviour {
     public enum EItemType {
-        BossRoomKey
+        BossRoomKey,
+        GoalRoomKey,
     }
 
     public EItemType itemType;
