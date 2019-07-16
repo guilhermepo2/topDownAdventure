@@ -20,6 +20,7 @@ namespace Dungeon {
         [Header("Game Objects")]
         public GameObject roomsParent;
         public GameObject roomPrefab;
+        public GameObject doorPrefab;
 
         [Header("Dungeon Objects")]
         public GameObject townStairs;
@@ -191,7 +192,7 @@ namespace Dungeon {
                     bool doorDown = m_takenPositions.Contains(room.gridPosition + Vector2.down);
                     bool doorLeft = m_takenPositions.Contains(room.gridPosition + Vector2.left);
 
-                    roomInstance.AddDoors(doorUp, doorRight, doorDown, doorLeft);
+                    roomInstance.AddDoors(doorUp, doorRight, doorDown, doorLeft, doorPrefab);
                 }
             }
         }

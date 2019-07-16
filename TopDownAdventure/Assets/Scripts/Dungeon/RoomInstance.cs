@@ -71,26 +71,31 @@ namespace Dungeon {
             return ret;
         }
 
-        public void AddDoors(bool _up, bool _right, bool _down, bool _left) {
+        public void AddDoors(bool _up, bool _right, bool _down, bool _left, GameObject _doorPrefab) {
             int middleWidth = Mathf.FloorToInt(roomSizeInTiles.x / 2);
             int middleHeight = Mathf.FloorToInt(roomSizeInTiles.y / 2);
+            Vector3 doorOffset = new Vector3(0.5f, 0.25f, 0);
 
             Debug.Log($"Placing Doors: {_up} {_right} {_down} {_left}");
 
             if(_up) {
                 PlaceDoorTile(middleWidth, 0);
+                Instantiate(_doorPrefab, PositionFromTileGrid(middleWidth, 0) + doorOffset, Quaternion.identity);
             }
 
             if(_right) {
                 PlaceDoorTile((int)roomSizeInTiles.x - 1, middleHeight);
+                Instantiate(_doorPrefab, PositionFromTileGrid((int)roomSizeInTiles.x - 1, middleHeight) + doorOffset, Quaternion.identity);
             }
 
             if(_down) {
                 PlaceDoorTile(middleWidth, ((int)roomSizeInTiles.y - 1));
+                Instantiate(_doorPrefab, PositionFromTileGrid(middleWidth, ((int)roomSizeInTiles.y - 1)) + doorOffset, Quaternion.identity);
             }
 
             if(_left) {
                 PlaceDoorTile(0, middleHeight);
+                Instantiate(_doorPrefab, PositionFromTileGrid(0, middleHeight) + doorOffset, Quaternion.identity);
             }
         }
 
