@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -56,20 +57,25 @@ namespace Dungeon {
             m_takenPositions.Insert(0, Vector2.zero);
             Vector2 positionToCheck;
 
-            float randomToCompare;
-            float randomToCompareStart = 0.2f;
-            float randomToCompareEnd = 0.1f;
-
-            // Creating Rooms
+            // Creating Regular Rooms
             for(int i = 0; i < numberOfRooms; i++) {
-                float percentage = ( (float) i / (float) (numberOfRooms - 1));
-                randomToCompare = Mathf.Lerp(randomToCompareStart, randomToCompareEnd, percentage);
                 positionToCheck = GetNewPosition();
 
                 // Creating it as an Standard Room
                 m_rooms[(int) positionToCheck.x + m_gridSizeX, (int) positionToCheck.y + m_gridSizeY] = new Room(positionToCheck, Room.ERoomType.Regular);
                 m_takenPositions.Insert(0, positionToCheck);
             }
+
+            // After creating all the regular rooms, we add two more rooms the key and boss room
+            // Creating Key Room
+            positionToCheck = GetNewPosition();
+            m_rooms[(int)positionToCheck.x + m_gridSizeX, (int)positionToCheck.y + m_gridSizeY] = new Room(positionToCheck, Room.ERoomType.KeyRoom);
+            m_takenPositions.Insert(0, positionToCheck);
+
+            // Creating Final (Boss) Room
+            positionToCheck = GetNewPosition();
+            m_rooms[(int)positionToCheck.x + m_gridSizeX, (int)positionToCheck.y + m_gridSizeY] = new Room(positionToCheck, Room.ERoomType.Final);
+            m_takenPositions.Insert(0, positionToCheck);
         }
 
         private Vector2 GetNewPosition() {

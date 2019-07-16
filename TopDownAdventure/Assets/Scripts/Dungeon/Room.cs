@@ -7,6 +7,7 @@ namespace Dungeon {
         public enum ERoomType {
             Start,
             Regular,
+            KeyRoom,
             Final,
         }
 

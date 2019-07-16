@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 namespace Dungeon {
     public class RoomInstance : MonoBehaviour {
         public Vector2 gridPosition;
-        public Vector2 roomSizeInTiles = new Vector2(9, 17);
+        public Vector2 roomSizeInTiles = new Vector2(17, 9);
         private Vector3 m_offset;
         public Room.ERoomType roomType;
 
@@ -27,12 +27,25 @@ namespace Dungeon {
             m_offset = new Vector3((-roomSizeInTiles.x + 1),
                                     ((roomSizeInTiles.y / 4f)),
                                     0f);
-            GenerateRoomTiles();
+
+            if(roomType == Room.ERoomType.Regular || roomType == Room.ERoomType.Start) {
+                GenerateRoomTiles();
+            } else {
+                GenerateSpecialRoomTiles();
+            }
         }
 
         private void GenerateRoomTiles() {
             for(int x = 0; x < roomSizeInTiles.x; x++) {
                 for(int y = 0; y < roomSizeInTiles.y; y++) {
+                    GenerateTile(x, y);
+                }
+            }
+        }
+
+        private void GenerateSpecialRoomTiles() {
+            for (int x = 0; x < (roomSizeInTiles.x); x++) {
+                for (int y = 0; y < (roomSizeInTiles.y); y++) {
                     GenerateTile(x, y);
                 }
             }
