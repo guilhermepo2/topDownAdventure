@@ -15,6 +15,7 @@ namespace Dungeon {
         public Tilemap collisionTilemap;
         public RuleTile groundRuleTile;
         public Tile collisionTile;
+        public RuleTile wallTile;
 
         [Header("Game Objects")]
         public GameObject roomsParent;
@@ -25,6 +26,7 @@ namespace Dungeon {
 
         private Vector2 m_roomSizeInTiles = new Vector2(9, 17);
         private Room[,] m_rooms;
+        private List<Room> m_roomsList;
         private List<RoomInstance> m_roomInstanceList;
         private List<Vector2> m_takenPositions = new List<Vector2>();
         private int m_gridSizeX;
@@ -32,6 +34,7 @@ namespace Dungeon {
 
         private void Awake() {
             m_roomInstanceList = new List<RoomInstance>();
+            m_roomsList = new List<Room>();
 
             if(numberOfRooms >= (worldSize.x * 2) * (worldSize.y * 2)) {
                 numberOfRooms = Mathf.RoundToInt((worldSize.x * 2) * (worldSize.y * 2));
@@ -44,80 +47,124 @@ namespace Dungeon {
         }
 
         private void GenerateLevel() {
+            Debug.Log("[DUNGEON GENERATOR] Creating Rooms...");
             CreateRooms();
+            Debug.Log("[DUNGEON GENERATOR] Placing Goal...");
+            PlaceGoalRoom();
+            Debug.Log("[DUNGEON GENERATOR] Placing Instances...");
             CreateRoomInstances();
+            Debug.Log("[DUNGEON GENERATOR] Adding Collisions");
             AddCollisions();
+            Debug.Log("[DUNGEON GENERATOR] Instantiating Dungeon Objects");
             InstantiateObjects();
         }
 
         #region ROOMS
         private void CreateRooms() {
             m_rooms = new Room[m_gridSizeX * 2, m_gridSizeY * 2];
-            m_rooms[m_gridSizeX, m_gridSizeY] = new Room(Vector2.zero, Room.ERoomType.Start);
+            Room starterRoom = new Room(Vector2.zero, Room.ERoomType.Start);
+            m_rooms[m_gridSizeX, m_gridSizeY] = starterRoom;
             m_takenPositions.Insert(0, Vector2.zero);
+            m_roomsList.Add(starterRoom);
+
             Vector2 positionToCheck;
 
             // Creating Regular Rooms
             for(int i = 0; i < numberOfRooms; i++) {
-                positionToCheck = GetNewPosition();
+                // Getting random room to branch from
+                Room roomToBranch = m_roomsList.RandomOrDefault();
+                positionToCheck = GetPositionFromRoom(roomToBranch);
+
+                if(positionToCheck == Vector2.zero) {
+                    continue;
+                }
 
                 // Creating it as an Standard Room
-                m_rooms[(int) positionToCheck.x + m_gridSizeX, (int) positionToCheck.y + m_gridSizeY] = new Room(positionToCheck, Room.ERoomType.Regular);
+                Room createdRoom = new Room(positionToCheck, Room.ERoomType.Regular);
+                m_rooms[(int)positionToCheck.x + m_gridSizeX, (int)positionToCheck.y + m_gridSizeY] = createdRoom;
+
+                m_roomsList.Add(createdRoom);
+                createdRoom.SetParent(roomToBranch);
+                roomToBranch.AddChildren(createdRoom);
                 m_takenPositions.Insert(0, positionToCheck);
             }
-
-            // After creating all the regular rooms, we add two more rooms the key and boss room
-            // Creating Key Room
-            positionToCheck = GetNewPosition();
-            m_rooms[(int)positionToCheck.x + m_gridSizeX, (int)positionToCheck.y + m_gridSizeY] = new Room(positionToCheck, Room.ERoomType.KeyRoom);
-            m_takenPositions.Insert(0, positionToCheck);
-
-            // Creating Final (Boss) Room
-            positionToCheck = GetNewPosition();
-            m_rooms[(int)positionToCheck.x + m_gridSizeX, (int)positionToCheck.y + m_gridSizeY] = new Room(positionToCheck, Room.ERoomType.Final);
-            m_takenPositions.Insert(0, positionToCheck);
         }
 
-        private Vector2 GetNewPosition() {
-            int x;
-            int y;
-            Vector2 positionToCheck;
-            int index;
+        private Vector2 GetPositionFromRoom(Room _room) {
+            Vector2 position;
+            int x, y;
+            int maxTries = 15, currentTries = 0;
 
             do {
-                // Selecting a Random Room to Branch From
-                index = Mathf.RoundToInt(Random.value * (m_takenPositions.Count - 1));
-                x = Mathf.RoundToInt(m_takenPositions[index].x);
-                y = Mathf.RoundToInt(m_takenPositions[index].y);
+                currentTries++;
+
+                if(currentTries >= maxTries) {
+                    position = Vector2.zero;
+                    break;
+                }
+
+                x = Mathf.RoundToInt(_room.gridPosition.x);
+                y = Mathf.RoundToInt(_room.gridPosition.y);
 
                 // deciding if we should branch up or down
                 bool isUpOrDown = Random.value < 0.5f;
                 bool isPositiveOrNegative = Random.value < 0.5f;
 
-                if(isUpOrDown) {
-                    if(isPositiveOrNegative) {
+                if (isUpOrDown) {
+                    if (isPositiveOrNegative) {
                         y++;
                     } else {
                         y--;
                     }
                 } else {
-                    if(isPositiveOrNegative) {
+                    if (isPositiveOrNegative) {
                         x++;
                     } else {
                         x--;
                     }
                 }
 
-                positionToCheck = new Vector2(x, y);
-            } while (m_takenPositions.Contains(positionToCheck) ||
+                position = new Vector2(x, y);
+            } while (
+                    m_takenPositions.Contains(position) ||
                     x >= m_gridSizeX ||
                     x < -m_gridSizeX ||
                     y >= m_gridSizeY ||
                     y < -m_gridSizeY);
 
-            return positionToCheck;
+            return position;
         }
         #endregion ROOMS
+
+        #region GOAL ROOM
+        private void PlaceGoalRoom() {
+            List<Room> possibleBossRooms = new List<Room>();
+            List<Room> leafRooms = m_roomsList.Where(room => {
+                return room.ChildrenRoomsAmount == 0;
+            }).ToList();
+
+            foreach(Room room in leafRooms) {
+                Room parentRoom = room.ParentRoom;
+                if(parentRoom.ChildrenRoomsAmount == 1) {
+                    possibleBossRooms.Add(parentRoom);
+                }
+            }
+
+            Debug.Log($"There are {possibleBossRooms.Count} possible boss rooms");
+            // if there is no possible boss room just restart the generation
+            if(possibleBossRooms.Count == 0) {
+                Debug.Log($"Should abort Dungeon Generation!");
+            } else {
+                Room bossRoom = possibleBossRooms.RandomOrDefault();
+                bossRoom.roomType = Room.ERoomType.BossRoom;
+                
+                // should have just one but using foreach just in case...
+                foreach(Room childrenRoom in bossRoom.ChildrenRooms) {
+                    childrenRoom.roomType = Room.ERoomType.GoalRoom;
+                }
+            }
+        }
+        #endregion
 
         #region ROOMS INSTANCES
         private void CreateRoomInstances() {
@@ -136,7 +183,16 @@ namespace Dungeon {
                 RoomInstance roomInstance = Instantiate(roomPrefab, roomPosition, Quaternion.identity).GetComponent<RoomInstance>();
                 m_roomInstanceList.Add(roomInstance);
                 roomInstance.transform.parent = roomsParent.transform;
-                roomInstance.Setup(room.gridPosition, room.roomType, groundTilemap, groundRuleTile);
+                roomInstance.Setup(room.gridPosition, room.roomType, groundTilemap, groundRuleTile, wallTile);
+
+                if(room.roomType == Room.ERoomType.BossRoom || room.roomType == Room.ERoomType.GoalRoom) {
+                    bool doorUp = m_takenPositions.Contains(room.gridPosition + Vector2.up);
+                    bool doorRight = m_takenPositions.Contains(room.gridPosition + Vector2.right);
+                    bool doorDown = m_takenPositions.Contains(room.gridPosition + Vector2.down);
+                    bool doorLeft = m_takenPositions.Contains(room.gridPosition + Vector2.left);
+
+                    roomInstance.AddDoors(doorUp, doorRight, doorDown, doorLeft);
+                }
             }
         }
         #endregion
@@ -156,6 +212,7 @@ namespace Dungeon {
         private void AddCollisionOnTile(int _x, int _y) {
             TileBase tile = groundTilemap.GetTile(new Vector3Int(_x, _y, 0));
 
+            // Adding Collision on Borders
             if (
                 !groundTilemap.HasTile(new Vector3Int(_x + 1, _y, 0)) ||
                 !groundTilemap.HasTile(new Vector3Int(_x - 1, _y, 0)) ||
@@ -169,6 +226,20 @@ namespace Dungeon {
                 ) {
                 collisionTilemap.SetTile(new Vector3Int(_x, _y, 0), collisionTile);
             }
+
+            // Adding Collision for Wall Tiles
+            if (tile == wallTile) {
+                collisionTilemap.SetTile(new Vector3Int(_x, _y, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x, _y + 1, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x + 1, _y + 1, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x + 1, _y, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x + 1, _y - 1, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x, _y - 1, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x - 1, _y - 1, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x - 1, _y, 0), collisionTile);
+                collisionTilemap.SetTile(new Vector3Int(_x - 1, _y + 1, 0), collisionTile);
+            }
+
         }
         #endregion COLLISIONS
 
