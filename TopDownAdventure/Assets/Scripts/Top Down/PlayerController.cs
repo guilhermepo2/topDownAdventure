@@ -61,6 +61,27 @@ public class PlayerController : MonoBehaviour {
         } else if(m_movement == Vector2.zero && m_currentPlayerState == EPlayerState.Idle) {
             StopAnimation();
         }
+
+        if(Input.GetKeyDown(KeyCode.Return)) {
+            Vector2 itemDirection = Vector2.up;
+
+            switch(m_directionPlayerIsFacing) {
+                case EDirection.Up:
+                    itemDirection = Vector2.up;
+                    break;
+                case EDirection.Right:
+                    itemDirection = Vector2.right;
+                    break;
+                case EDirection.Down:
+                    itemDirection = Vector2.down;
+                    break;
+                case EDirection.Left:
+                    itemDirection = Vector2.left;
+                    break;
+            }
+
+            TryToGetItem(itemDirection);
+        }
     }
 
     private void MoveOneTile(Vector2 _direction) {
@@ -152,6 +173,48 @@ public class PlayerController : MonoBehaviour {
                 m_animator.Play(STOPPED_SIDE_ANIMATION);
                 transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
                 break;
+        }
+    }
+
+    // -----------------------------------------------------------
+    // Item
+    // [TO DO]
+    // The Logic of what happens when an item is collected could be written on the item script itself and could be handled with interfaces
+    // Needless to say that the door handling shouldn't be here!
+    private void TryToGetItem(Vector2 _direction) {
+        Vector3 positionToCheck = transform.position + new Vector3(_direction.x, _direction.y, 0);
+        Collider2D collisionObject = Physics2D.OverlapCircle(positionToCheck, 0.1f);
+
+        if(collisionObject == null) {
+            return;
+        }
+
+        Item itemCollided = collisionObject.gameObject.GetComponent<Item>();
+        Dungeon.Door doorCollided = collisionObject.gameObject.GetComponent<Dungeon.Door>();
+
+        if(itemCollided != null) {
+            switch (itemCollided.itemType) {
+                case Item.EItemType.BossRoomKey:
+                    DependencyManager.Instance.DungeonController.PlayerHasBossRoomKey = true;
+                    break;
+            }
+
+            Destroy(itemCollided.gameObject);
+        } else if(doorCollided != null) {
+            Debug.Log($"Player Collided with {doorCollided.doorType}");
+            switch(doorCollided.doorType) {
+                case Dungeon.Door.EDoorType.BossRoom:
+                    if(DependencyManager.Instance.DungeonController.PlayerHasBossRoomKey) {
+                        Destroy(collisionObject.gameObject);
+                    }
+                    break;
+                case Dungeon.Door.EDoorType.GoalRoom:
+                    if (DependencyManager.Instance.DungeonController.PlayerHasGoalRoomKey) {
+                        Destroy(collisionObject.gameObject);
+                    }
+                    break;
+            }
+
         }
     }
 

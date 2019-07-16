@@ -80,22 +80,22 @@ namespace Dungeon {
 
             if(_up) {
                 PlaceDoorTile(middleWidth, 0);
-                Instantiate(_doorPrefab, PositionFromTileGrid(middleWidth, 0) + doorOffset, Quaternion.identity);
+                InstantiateDoor(_doorPrefab, PositionFromTileGrid(middleWidth, 0) + doorOffset);
             }
 
             if(_right) {
                 PlaceDoorTile((int)roomSizeInTiles.x - 1, middleHeight);
-                Instantiate(_doorPrefab, PositionFromTileGrid((int)roomSizeInTiles.x - 1, middleHeight) + doorOffset, Quaternion.identity);
+                InstantiateDoor(_doorPrefab, PositionFromTileGrid((int)roomSizeInTiles.x - 1, middleHeight) + doorOffset);
             }
 
             if(_down) {
                 PlaceDoorTile(middleWidth, ((int)roomSizeInTiles.y - 1));
-                Instantiate(_doorPrefab, PositionFromTileGrid(middleWidth, ((int)roomSizeInTiles.y - 1)) + doorOffset, Quaternion.identity);
+                InstantiateDoor(_doorPrefab, PositionFromTileGrid(middleWidth, ((int)roomSizeInTiles.y - 1)) + doorOffset);
             }
 
             if(_left) {
                 PlaceDoorTile(0, middleHeight);
-                Instantiate(_doorPrefab, PositionFromTileGrid(0, middleHeight) + doorOffset, Quaternion.identity);
+                InstantiateDoor(_doorPrefab, PositionFromTileGrid(0, middleHeight) + doorOffset);
             }
         }
 
@@ -110,6 +110,17 @@ namespace Dungeon {
             GenerateTile(_x - 1, _y - 1, m_groundTile);
             GenerateTile(_x - 1, _y, m_groundTile);
             GenerateTile(_x - 1, _y + 1, m_groundTile);
+        }
+
+        private void InstantiateDoor(GameObject _prefab, Vector3 _position) {
+            Door instantiatedDoor = Instantiate(_prefab, _position, Quaternion.identity).GetComponent<Door>();
+
+            if (roomType == Room.ERoomType.BossRoom) {
+                instantiatedDoor.doorType = Door.EDoorType.BossRoom;
+            } else if(roomType == Room.ERoomType.GoalRoom) {
+                instantiatedDoor.doorType = Door.EDoorType.GoalRoom;
+            }
+
         }
     }
 }

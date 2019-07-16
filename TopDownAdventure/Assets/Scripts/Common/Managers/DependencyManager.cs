@@ -72,6 +72,14 @@ public class DependencyManager : MonoBehaviour {
         }
     }
 
+    // Dungeon Controller
+    private Dungeon.DungeonController m_dungeonController;
+    public Dungeon.DungeonController DungeonController {
+        get {
+            return m_dungeonController;
+        }
+    }
+
     // Combat Manager
     private CombatSystem.CombatManager m_combatManager;
     public CombatSystem.CombatManager Combat {
@@ -103,6 +111,8 @@ public class DependencyManager : MonoBehaviour {
         m_playerPokemon = GameObject.Find(PLAYER_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
         m_enemyPokemon = GameObject.Find(ENEMY_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
         SceneManager.sceneLoaded += LevelLoaded;
+
+        FetchDependencies();
     }
 
     private void LevelLoaded(Scene _scene, LoadSceneMode _mode) {
@@ -110,12 +120,13 @@ public class DependencyManager : MonoBehaviour {
     }
 
     private void FetchDependencies() {
-        m_topDownManagerReference = FindObjectOfType<TopDownManager>();
+        m_gameController = FindObjectOfType<GameController>();
         m_levelManagerReference = FindObjectOfType<LevelManager>();
+        m_topDownManagerReference = FindObjectOfType<TopDownManager>();
+        m_combatManager = FindObjectOfType<CombatSystem.CombatManager>();
         m_encounterManager = FindObjectOfType<Dungeon.EncounterManager>();
         m_dungeonGenerator = FindObjectOfType<Dungeon.DungeonGenerator>();
-        m_combatManager = FindObjectOfType<CombatSystem.CombatManager>();
-        m_gameController = FindObjectOfType<GameController>();
+        m_dungeonController = FindObjectOfType<Dungeon.DungeonController>();
     }
 
     // ----------------------------------------------------------------------------

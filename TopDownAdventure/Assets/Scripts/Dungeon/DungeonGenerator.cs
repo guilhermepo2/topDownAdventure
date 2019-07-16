@@ -50,12 +50,16 @@ namespace Dungeon {
         private void GenerateLevel() {
             Debug.Log("[DUNGEON GENERATOR] Creating Rooms...");
             CreateRooms();
-            Debug.Log("[DUNGEON GENERATOR] Placing Goal...");
+
+            Debug.Log("[DUNGEON GENERATOR] Placing Goals...");
             PlaceGoalRoom();
+
             Debug.Log("[DUNGEON GENERATOR] Placing Instances...");
             CreateRoomInstances();
+
             Debug.Log("[DUNGEON GENERATOR] Adding Collisions");
             AddCollisions();
+
             Debug.Log("[DUNGEON GENERATOR] Instantiating Dungeon Objects");
             InstantiateObjects();
         }
