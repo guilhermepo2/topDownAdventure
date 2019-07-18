@@ -25,6 +25,7 @@ namespace Dungeon {
 
         [Header("Dungeon Objects")]
         public GameObject townStairs;
+        public GameObject nextFloorStairs;
         public GameObject bossRoomKey;
         public GameObject enemyEncounter;
         public GameObject bossEncounter;
@@ -270,17 +271,25 @@ namespace Dungeon {
             randomRoom.InstantiateObject(bossRoomKey, positionX, positionY);
 
             // Instantiate Goal Room Key on Boss Room
-            RoomInstance goalRoom = m_roomInstanceList.Where(room => {
+            RoomInstance bossRoom = m_roomInstanceList.Where(room => {
                 return room.roomType == Room.ERoomType.BossRoom;
             }).First();
 
-            if(goalRoom == null) {
+            if(bossRoom == null) {
                 return;
             }
 
             positionX = Random.Range(2, (int)m_roomSizeInTiles.x - 2);
             positionY = Random.Range(2, (int)m_roomSizeInTiles.y - 2);
-            goalRoom.InstantiateObject(bossEncounter, positionX, positionY);
+            bossRoom.InstantiateObject(bossEncounter, positionX, positionY);
+
+            // Instantiating Stairs on the Goal Room
+            RoomInstance goalRoom = m_roomInstanceList.Where(room => {
+                return room.roomType == Room.ERoomType.GoalRoom;
+            }).First();
+            positionX = Random.Range(2, (int)m_roomSizeInTiles.x - 2);
+            positionY = Random.Range(2, (int)m_roomSizeInTiles.y - 2);
+            goalRoom.InstantiateObject(nextFloorStairs, positionX, positionY);
 
             // Instantiating Enemies
             RoomInstance[] regularRooms = m_roomInstanceList.Where(room => {
