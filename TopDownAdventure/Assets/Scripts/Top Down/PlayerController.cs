@@ -107,7 +107,6 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
-
         // Checking for Triggers
         ITriggerInteraction triggerInteraction = movementCollision.gameObject.GetComponent<ITriggerInteraction>();
 
@@ -181,6 +180,7 @@ public class PlayerController : MonoBehaviour {
     // [TO DO]
     // The Logic of what happens when an item is collected could be written on the item script itself and could be handled with interfaces
     // Needless to say that the door handling shouldn't be here!
+    // Needless to say encounter handling shouldn't be here!
     private void TryToGetItem(Vector2 _direction) {
         Vector3 positionToCheck = transform.position + new Vector3(_direction.x, _direction.y, 0);
         Collider2D collisionObject = Physics2D.OverlapCircle(positionToCheck, 0.1f);
@@ -191,6 +191,7 @@ public class PlayerController : MonoBehaviour {
 
         Item itemCollided = collisionObject.gameObject.GetComponent<Item>();
         Dungeon.Door doorCollided = collisionObject.gameObject.GetComponent<Dungeon.Door>();
+        Dungeon.EnemyEncounter enemyEncounter = collisionObject.gameObject.GetComponent<Dungeon.EnemyEncounter>();
 
         if(itemCollided != null) {
             switch (itemCollided.itemType) {
@@ -217,7 +218,9 @@ public class PlayerController : MonoBehaviour {
                     }
                     break;
             }
-
+        } else if(enemyEncounter != null) {
+            enemyEncounter.ProcessEncounter();
+            DependencyManager.Instance.Encounter.ProcessEncounter();
         }
     }
 

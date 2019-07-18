@@ -21,11 +21,17 @@ namespace Dungeon {
         public GameObject roomsParent;
         public GameObject roomPrefab;
         public GameObject doorPrefab;
-        public GameObject bossRoomKey;
-        public GameObject goalRoomKey;
+
 
         [Header("Dungeon Objects")]
         public GameObject townStairs;
+        public GameObject bossRoomKey;
+        public GameObject enemyEncounter;
+        public GameObject bossEncounter;
+
+        [Header("Enemies in Dungeon Data")]
+        public int minimumAmountOfEnemies = 10;
+        public int maximumAmountOfEnemies = 20;
 
         private Vector2 m_roomSizeInTiles = new Vector2(9, 17);
         private Room[,] m_rooms;
@@ -274,7 +280,19 @@ namespace Dungeon {
 
             positionX = Random.Range(2, (int)m_roomSizeInTiles.x - 2);
             positionY = Random.Range(2, (int)m_roomSizeInTiles.y - 2);
-            goalRoom.InstantiateObject(goalRoomKey, positionX, positionY);
+            goalRoom.InstantiateObject(bossEncounter, positionX, positionY);
+
+            // Instantiating Enemies
+            RoomInstance[] regularRooms = m_roomInstanceList.Where(room => {
+                return room.roomType == Room.ERoomType.Regular;
+            }).ToArray();
+            int amountOfEnemies = Random.Range(minimumAmountOfEnemies, maximumAmountOfEnemies);
+
+            for(int i = 0; i < amountOfEnemies; i++) {
+                positionX = Random.Range(1, (int)m_roomSizeInTiles.x - 1);
+                positionY = Random.Range(1, (int)m_roomSizeInTiles.y - 1);
+                regularRooms.RandomOrDefault().InstantiateObject(enemyEncounter, positionX, positionY);
+            }
         }
         #endregion OBJECTS
     }
