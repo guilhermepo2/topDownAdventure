@@ -32,5 +32,9 @@ namespace CombatSystem {
             // ADD MODIFIERS
             return (((((2 * _attackingPokemonLevel) / 5) + 2) * _movePower * (_attack / _defense)) / 50) + 2;
         }
+
+        public static int CalculateExperience(int _baseExperience, int _defeatedPokemonLevel, int _winnerPokemonLevel) {
+            return (((_baseExperience * _defeatedPokemonLevel) / 5) * (((int)Mathf.Pow(2 * _defeatedPokemonLevel + 10, 2.5f)) / ((int)Mathf.Pow(_defeatedPokemonLevel + _winnerPokemonLevel + 10, 2.5f))) + 1);
+        }
     }
 }

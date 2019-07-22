@@ -50,6 +50,9 @@ TagManager:
   - name: Player
     uniqueID: 355237577
     locked: 0
+  - name: Item
+    uniqueID: 828747069
+    locked: 0
   - name: Grass
     uniqueID: 3947998153
     locked: 0
