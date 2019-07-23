@@ -14,6 +14,8 @@ namespace CombatSystem {
             ProcessingTurnStack,
             EndOfTurn,
             TurnsEnded,
+            PlayerWon,
+            PlayerLose,
             End,
             // should I have separate states for player won and player lose?
         }
@@ -66,6 +68,9 @@ namespace CombatSystem {
         private int m_selectedMoveIndex;
         private Stack<BattlePokemon> m_turnStack;
 
+        // Dialogue Feedback
+        private Queue<string> m_feedbackSentences;
+
         private void Start() {
             // Checking if it was transitioned from Dungeon
             Destroy(enemyPokemon);
@@ -81,6 +86,7 @@ namespace CombatSystem {
             m_playerPokemon.CalculateStats(false);
 
             m_turnStack = new Stack<BattlePokemon>();
+            m_feedbackSentences = new Queue<string>();
             enemyUISkin.Assign(m_enemyPokemon, false);
             playerUISkin.Assign(m_playerPokemon, true);
             playerOptionsPanel.SetActive(false);
@@ -127,6 +133,12 @@ namespace CombatSystem {
                     break;
                 case ECombatState.TurnsEnded:
                     EndTurns();
+                    break;
+                case ECombatState.PlayerWon:
+                    PlayerWon();
+                    break;
+                case ECombatState.PlayerLose:
+                    PlayerLost();
                     break;
                 case ECombatState.End:
                     CombatEnded();
@@ -394,11 +406,18 @@ namespace CombatSystem {
         private void EndTurns() {
             // Check for win/loss condition
             if (m_enemyPokemon.currentHealth <= 0) {
-                m_combatState = ECombatState.End;
+                m_combatState = ECombatState.PlayerWon;
                 battleLogText.text = "You won!";
             } else if(m_playerPokemon.currentHealth <= 0) {
-                m_combatState = ECombatState.End;
-                battleLogText.text = "You Lose!";
+                m_combatState = ECombatState.PlayerLose;
+
+                // Adding sentences to be shown to the player...
+                m_feedbackSentences.Clear();
+                m_feedbackSentences.Enqueue($"{m_playerPokemon.PokemonName} fainted...");
+                m_feedbackSentences.Enqueue($"Game Over...");
+
+                // Showing the first sentence...
+                battleLogText.text = m_feedbackSentences.Dequeue();
             } else {
                 // Everything goes on normally...
                 m_combatState = ECombatState.PlayerSelectingOption;
@@ -410,6 +429,21 @@ namespace CombatSystem {
         #endregion
 
         #region COMBAT ENDED
+        private void PlayerWon() {
+            m_combatState = ECombatState.End;
+        }
+
+        private void PlayerLost() {
+            if(Input.GetKeyDown(KeyCode.Return)) {
+                if(m_feedbackSentences.Count == 0) {
+                    DependencyManager.Instance.LevelManager.UnloadLevel(DependencyManager.BATTLE_SCENE);
+                    DependencyManager.Instance.RestartGame();
+                } else {
+                    battleLogText.text = m_feedbackSentences.Dequeue();
+                }
+            }
+        }
+
         private void CombatEnded() {
             // 1. Calculate Experience
             // 2. Give Experience to the player

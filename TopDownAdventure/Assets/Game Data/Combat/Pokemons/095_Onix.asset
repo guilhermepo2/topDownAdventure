@@ -18,3 +18,5 @@ MonoBehaviour:
     type: 3}
   pokemonName: ONYX
   baseStats: {fileID: 11400000, guid: feb6c9436da962b46877c2c4eabc075d, type: 2}
+  baseExperience: 0
+  experienceType: 1

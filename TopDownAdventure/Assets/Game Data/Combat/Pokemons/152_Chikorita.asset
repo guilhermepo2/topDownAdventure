@@ -18,3 +18,5 @@ MonoBehaviour:
     type: 3}
   pokemonName: CHIKORITA
   baseStats: {fileID: 11400000, guid: 90b2f21e68c3b8544b2f472341828231, type: 2}
+  baseExperience: 0
+  experienceType: 2

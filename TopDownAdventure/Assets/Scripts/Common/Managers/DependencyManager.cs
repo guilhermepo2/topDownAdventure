@@ -193,4 +193,10 @@ public class DependencyManager : MonoBehaviour {
     public CombatSystem.BattlePokemon GetEnemyPokemon() {
         return m_enemyPokemon;
     }
+
+    // -------------------------------------------------------------------------------
+    public void RestartGame() {
+        m_playerPokemon.CalculateStats(true);
+        m_levelManagerReference.LoadLevel(MAIN_MENU_SCENE);
+    }
 }
