@@ -407,7 +407,17 @@ namespace CombatSystem {
             // Check for win/loss condition
             if (m_enemyPokemon.currentHealth <= 0) {
                 m_combatState = ECombatState.PlayerWon;
-                battleLogText.text = "You won!";
+
+                // Adding sentences to be shown to the player...
+                m_feedbackSentences.Clear();
+                m_feedbackSentences.Enqueue($"{m_playerPokemon.PokemonName} won the battle!");
+                int experienceEarned = CombatFunctions.CalculateExperience(m_enemyPokemon.basePokemon.baseExperience, m_enemyPokemon.currentLevel, m_playerPokemon.currentLevel);
+                Debug.Log($"Calculating Experience: {m_enemyPokemon.basePokemon.baseExperience}, {m_enemyPokemon.currentLevel}, {m_playerPokemon.currentLevel}");
+                Debug.Log($"Calculated Experience: {CombatFunctions.CalculateExperience(m_enemyPokemon.basePokemon.baseExperience, m_enemyPokemon.currentLevel, m_playerPokemon.currentLevel)}");
+                // [TO DO] add experience to player pokemon...
+                m_feedbackSentences.Enqueue($"{m_playerPokemon.PokemonName} earned {experienceEarned} points of experience!");
+
+                battleLogText.text = m_feedbackSentences.Dequeue();
             } else if(m_playerPokemon.currentHealth <= 0) {
                 m_combatState = ECombatState.PlayerLose;
 
@@ -430,7 +440,14 @@ namespace CombatSystem {
 
         #region COMBAT ENDED
         private void PlayerWon() {
-            m_combatState = ECombatState.End;
+            if(Input.GetKeyDown(KeyCode.Return)) {
+                // have to change to end state when we have 1 sentence because CombatEnded also wait for input...
+                if(m_feedbackSentences.Count == 1) {
+                    m_combatState = ECombatState.End;
+                }
+
+                battleLogText.text = m_feedbackSentences.Dequeue();
+            }
         }
 
         private void PlayerLost() {
@@ -445,10 +462,7 @@ namespace CombatSystem {
         }
 
         private void CombatEnded() {
-            // 1. Calculate Experience
-            // 2. Give Experience to the player
-
-            // 3. Persisting player's pokemon life
+            // Persisting player's pokemon life
             DependencyManager.Instance.UpdatePlayerPokemonHealth(m_playerPokemon.currentHealth);
 
             if(Input.GetKeyDown(KeyCode.Return)) {

@@ -34,7 +34,11 @@ namespace CombatSystem {
         }
 
         public static int CalculateExperience(int _baseExperience, int _defeatedPokemonLevel, int _winnerPokemonLevel) {
-            return (((_baseExperience * _defeatedPokemonLevel) / 5) * (((int)Mathf.Pow(2 * _defeatedPokemonLevel + 10, 2.5f)) / ((int)Mathf.Pow(_defeatedPokemonLevel + _winnerPokemonLevel + 10, 2.5f))) + 1);
+            float factor1 = (_baseExperience * _defeatedPokemonLevel / 5);
+            float factor2_up = Mathf.Pow((2 * _defeatedPokemonLevel + 10), 2.5f);
+            float factor2_down = Mathf.Pow((_defeatedPokemonLevel + _winnerPokemonLevel + 10), 2.5f);
+            int totalExperience = Mathf.RoundToInt(factor1 * (factor2_up / factor2_down) + 1);
+            return totalExperience;
         }
     }
 }

@@ -18,5 +18,5 @@ MonoBehaviour:
     type: 3}
   pokemonName: TOTODILE
   baseStats: {fileID: 11400000, guid: e6bb7e74253f08948b63cbc82fc4a570, type: 2}
-  baseExperience: 0
+  baseExperience: 63
   experienceType: 2
