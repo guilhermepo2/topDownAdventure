@@ -4,8 +4,22 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class DependencyManager : MonoBehaviour {
+    [Header("Musics")]
+    public AudioClip mainMenuMusic;
+    public AudioClip cityClip;
+    public AudioClip dungeonClip;
+    public AudioClip battleTheme;
+    public AudioClip bossBattleTheme;
+
+    [Header("Sound Effects")]
+    public AudioClip feedbackClip;
+    public AudioClip buttonClickClip;
+
     // Constant strings for scenes
     public static int MAIN_MENU_SCENE = 0;
+    public static int TOWN_SCENE = 1;
+    public static int DUNGEON_INTRO_SCENE = 2;
+    public static int DUNGEON_SCENE = 3;
     public static int BATTLE_SCENE = 4;
     private const string PLAYER_POKEMON = "Player Pokemon";
     private const string ENEMY_POKEMON = "Enemy Pokemon";
@@ -96,6 +110,14 @@ public class DependencyManager : MonoBehaviour {
         }
     }
 
+    // Sound Manager
+    private SoundManager m_soundManager;
+    public SoundManager SoundManager {
+        get {
+            return m_soundManager;
+        }
+    }
+
     // ----------------------------------------------------------------------------
     private void Awake() {
         if (m_instance == null) {
@@ -117,6 +139,19 @@ public class DependencyManager : MonoBehaviour {
 
     private void LevelLoaded(Scene _scene, LoadSceneMode _mode) {
         FetchDependencies();
+
+        // Playing the correct music for the scenes...
+        if(_scene.buildIndex == MAIN_MENU_SCENE) {
+            m_soundManager.PlayBackgroundMusic(mainMenuMusic);
+        } else if(_scene.buildIndex == TOWN_SCENE) {
+            m_soundManager.PlayBackgroundMusic(cityClip);
+        } else if(_scene.buildIndex == DUNGEON_INTRO_SCENE) {
+            m_soundManager.PlayBackgroundMusic(dungeonClip);
+        } else if(_scene.buildIndex == DUNGEON_SCENE) {
+            m_soundManager.PlayBackgroundMusic(dungeonClip);
+        } else if(_scene.buildIndex == BATTLE_SCENE) {
+            m_soundManager.PlayBackgroundMusic(battleTheme);
+        }
     }
 
     private void FetchDependencies() {
@@ -127,6 +162,7 @@ public class DependencyManager : MonoBehaviour {
         m_encounterManager = FindObjectOfType<Dungeon.EncounterManager>();
         m_dungeonGenerator = FindObjectOfType<Dungeon.DungeonGenerator>();
         m_dungeonController = FindObjectOfType<Dungeon.DungeonController>();
+        m_soundManager = FindObjectOfType<SoundManager>();
     }
 
     // ----------------------------------------------------------------------------

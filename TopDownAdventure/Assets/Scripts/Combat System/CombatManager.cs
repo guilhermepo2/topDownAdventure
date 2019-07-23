@@ -412,6 +412,7 @@ namespace CombatSystem {
         private void CombatEnded() {
             if(Input.GetKeyDown(KeyCode.Return)) {
                 DependencyManager.Instance.LevelManager.UnloadLevel(DependencyManager.BATTLE_SCENE);
+                DependencyManager.Instance.SoundManager.PlayBackgroundMusic(DependencyManager.Instance.dungeonClip);
                 DependencyManager.Instance.TopDown.ActivateTopDown();
             }
         }
