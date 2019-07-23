@@ -131,6 +131,8 @@ public class DependencyManager : MonoBehaviour {
     private void Start() {
         Debug.Log("Dependency Manager start...");
         m_playerPokemon = GameObject.Find(PLAYER_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
+        // Calculating Player Pokemon Stats when the game starts because here we want to set it to max health...
+        m_playerPokemon.CalculateStats(true);
         m_enemyPokemon = GameObject.Find(ENEMY_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
         SceneManager.sceneLoaded += LevelLoaded;
 
@@ -182,6 +184,10 @@ public class DependencyManager : MonoBehaviour {
 
     public CombatSystem.BattlePokemon GetPlayerPokemon() {
         return m_playerPokemon;
+    }
+
+    public void UpdatePlayerPokemonHealth(int _health) {
+        m_playerPokemon.currentHealth = _health;
     }
 
     public CombatSystem.BattlePokemon GetEnemyPokemon() {

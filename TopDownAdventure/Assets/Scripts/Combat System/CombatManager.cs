@@ -15,6 +15,7 @@ namespace CombatSystem {
             EndOfTurn,
             TurnsEnded,
             End,
+            // should I have separate states for player won and player lose?
         }
 
         public enum EOptionsToSelect {
@@ -76,8 +77,8 @@ namespace CombatSystem {
             m_enemyPokemon = enemyPokemon.GetComponent<BattlePokemon>();
             m_enemyAI = enemyPokemon.GetComponent<AI.BaseEnemyAI>();
             m_playerPokemon = playerPokemon.GetComponent<BattlePokemon>();
-            m_enemyPokemon.CalculateStats();
-            m_playerPokemon.CalculateStats();
+            m_enemyPokemon.CalculateStats(true);
+            m_playerPokemon.CalculateStats(false);
 
             m_turnStack = new Stack<BattlePokemon>();
             enemyUISkin.Assign(m_enemyPokemon, false);
@@ -410,6 +411,12 @@ namespace CombatSystem {
 
         #region COMBAT ENDED
         private void CombatEnded() {
+            // 1. Calculate Experience
+            // 2. Give Experience to the player
+
+            // 3. Persisting player's pokemon life
+            DependencyManager.Instance.UpdatePlayerPokemonHealth(m_playerPokemon.currentHealth);
+
             if(Input.GetKeyDown(KeyCode.Return)) {
                 DependencyManager.Instance.LevelManager.UnloadLevel(DependencyManager.BATTLE_SCENE);
                 DependencyManager.Instance.SoundManager.PlayBackgroundMusic(DependencyManager.Instance.dungeonClip);

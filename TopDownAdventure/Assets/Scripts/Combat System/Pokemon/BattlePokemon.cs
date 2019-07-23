@@ -60,9 +60,14 @@ namespace CombatSystem {
         private Data.InBattleStats m_inBattleStats;
         public Data.InBattleStats BattleStats { get { return m_inBattleStats; } }
 
-        public void CalculateStats() {
+        // [TO DO]
+        // Having bool parameters is considered a bad practice, maybe I can change it?!
+        public void CalculateStats(bool _updateMaxHealth) {
             m_inBattleStats = CombatFunctions.CalculateInBattleStats(basePokemon.baseStats, individualValues, effortValues, currentLevel);
-            currentHealth = m_inBattleStats.maxHp;
+
+            if(_updateMaxHealth) {
+                currentHealth = m_inBattleStats.maxHp;
+            }
         }
     }
 }
