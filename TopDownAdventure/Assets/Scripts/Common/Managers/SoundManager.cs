@@ -39,6 +39,8 @@ public class SoundManager : MonoBehaviour {
     }
 
     public void UpdateMusic() {
+        musicSource.volume = musicVolume;
+
         if(musicSource.isPlaying != musicEnabled) {
             if(musicEnabled) {
                 musicSource.Play();
@@ -46,6 +48,11 @@ public class SoundManager : MonoBehaviour {
                 musicSource.Stop();
             }
         }
+    }
+
+    public void UpdateMusicVolume(float _volume) {
+        musicVolume = _volume;
+        UpdateMusic();
     }
     #endregion
 
@@ -60,6 +67,15 @@ public class SoundManager : MonoBehaviour {
         }
 
         effectsSource.PlayOneShot(_clip);
+    }
+
+    public void UpdateEffectsVolume(float _volume) {
+        effectsVolume = _volume;
+        UpdateEffects();
+    }
+
+    private void UpdateEffects() {
+        effectsSource.volume = effectsVolume;
     }
     #endregion
 }
