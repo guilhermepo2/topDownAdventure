@@ -69,5 +69,19 @@ namespace CombatSystem {
                 currentHealth = m_inBattleStats.maxHp;
             }
         }
+
+        // Add Experience AND check if leveled up, that's a function doing two different things, that's bad.
+        public bool AddExperience(int _experience) {
+            int experienceToNextLevel = CombatFunctions.ExperienceToNextLevel(basePokemon.experienceType, currentLevel);
+            currentExperience += _experience;
+
+            if(currentExperience >= experienceToNextLevel && currentLevel < 100) {
+                currentLevel++;
+                currentExperience = (currentExperience - experienceToNextLevel);
+                return true;
+            }
+
+            return false;
+        }
     }
 }

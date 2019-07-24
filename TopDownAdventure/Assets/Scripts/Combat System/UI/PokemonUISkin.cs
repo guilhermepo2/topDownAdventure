@@ -21,9 +21,9 @@ namespace CombatSystem.UI {
             }
 
             this.pokemonName.text = _pokemon.PokemonName;
-            this.pokemonLevel.text = $"L{_pokemon.currentLevel}";
+            this.pokemonLevel.text = $"Lv. {_pokemon.currentLevel}";
             this.pokemonHp.text = $"HP {_pokemon.currentHealth}/{_pokemon.BattleStats.maxHp}";
-            this.pokemonExp.text = $"EXP {_pokemon.currentExperience}";
+            this.pokemonExp.text = $"EXP {_pokemon.currentExperience}/{CombatFunctions.ExperienceToNextLevel(_pokemon.basePokemon.experienceType, _pokemon.currentLevel)}";
         }
     }
 }

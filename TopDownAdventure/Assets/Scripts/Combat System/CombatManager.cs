@@ -412,10 +412,11 @@ namespace CombatSystem {
                 m_feedbackSentences.Clear();
                 m_feedbackSentences.Enqueue($"{m_playerPokemon.PokemonName} won the battle!");
                 int experienceEarned = CombatFunctions.CalculateExperience(m_enemyPokemon.basePokemon.baseExperience, m_enemyPokemon.currentLevel, m_playerPokemon.currentLevel);
-                Debug.Log($"Calculating Experience: {m_enemyPokemon.basePokemon.baseExperience}, {m_enemyPokemon.currentLevel}, {m_playerPokemon.currentLevel}");
-                Debug.Log($"Calculated Experience: {CombatFunctions.CalculateExperience(m_enemyPokemon.basePokemon.baseExperience, m_enemyPokemon.currentLevel, m_playerPokemon.currentLevel)}");
                 // [TO DO] add experience to player pokemon...
                 m_feedbackSentences.Enqueue($"{m_playerPokemon.PokemonName} earned {experienceEarned} points of experience!");
+                if(m_playerPokemon.AddExperience(experienceEarned)) {
+                    m_feedbackSentences.Enqueue($"{m_playerPokemon.PokemonName} leveled up!");
+                }
 
                 battleLogText.text = m_feedbackSentences.Dequeue();
             } else if(m_playerPokemon.currentHealth <= 0) {
@@ -443,6 +444,9 @@ namespace CombatSystem {
             if(Input.GetKeyDown(KeyCode.Return)) {
                 // have to change to end state when we have 1 sentence because CombatEnded also wait for input...
                 if(m_feedbackSentences.Count == 1) {
+                    // Updating the Pokemon UI to show in case leveled up...
+                    playerUISkin.Assign(m_playerPokemon, true);
+
                     m_combatState = ECombatState.End;
                 }
 

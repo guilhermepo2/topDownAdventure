@@ -40,5 +40,40 @@ namespace CombatSystem {
             int totalExperience = Mathf.RoundToInt(factor1 * (factor2_up / factor2_down) + 1);
             return totalExperience;
         }
+
+        public static int ExperienceToNextLevel(Pokemon.EExperienceTypes _experienceType, int _currentLevel) {
+            switch (_experienceType) {
+                case Pokemon.EExperienceTypes.Fast:
+                    return CalculateFastExperienceToNextLevel(_currentLevel);
+                case Pokemon.EExperienceTypes.MediumFast:
+                    return CalculateMediumFastExperienceToNextLevel(_currentLevel);
+                case Pokemon.EExperienceTypes.MediumSlow:
+                    return CalculateMediumSlowExperienceToNextLevel(_currentLevel);
+                case Pokemon.EExperienceTypes.Slow:
+                    return CalculateSlowExperienceToNextLevel(_currentLevel);
+            }
+
+            return 0;
+        }
+
+        public static int CalculateFastExperienceToNextLevel(int _currentLevel) {
+            int experience = Mathf.RoundToInt( (4 * Mathf.Pow(_currentLevel,3)) / (5.0f));
+            return experience;
+        }
+
+        public static int CalculateMediumFastExperienceToNextLevel(int _currentLevel) {
+            int experience = Mathf.RoundToInt(Mathf.Pow(_currentLevel, 3));
+            return experience;
+        }
+
+        public static int CalculateMediumSlowExperienceToNextLevel(int _currentLevel) {
+            int experience = Mathf.RoundToInt((6/5 * Mathf.Pow(_currentLevel, 3)) - (15 * Mathf.Pow(_currentLevel, 2)) + (100 * _currentLevel) - 140);
+            return experience;
+        }
+
+        public static int CalculateSlowExperienceToNextLevel(int _currentLevel) {
+            int experience = Mathf.RoundToInt( (5 * Mathf.Pow(_currentLevel, 3)) / (4.0f) );
+            return experience;
+        }
     }
 }
