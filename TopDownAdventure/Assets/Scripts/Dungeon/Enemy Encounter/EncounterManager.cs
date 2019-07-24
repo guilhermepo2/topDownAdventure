@@ -10,6 +10,12 @@ namespace Dungeon {
         public CombatSystem.Data.Stats[] ivPool;
         public CombatSystem.Data.Stats[] evPool;
 
+        [Header("Wild Encounter Configuration")]
+        [Range(0,1)]
+        public float minimumLevelMultiplier = 0.5f;
+        [Range(0, 1)]
+        public float maximumLevelMultiplier = 0.7f;
+
         public void ProcessEncounter() {
             DependencyManager.Instance.TopDown.HaltTopDown();
 
@@ -19,7 +25,12 @@ namespace Dungeon {
             wildPokemon.effortValues = evPool.RandomOrDefault();
 
             // Do Stuff with the level Here....
-            wildPokemon.currentLevel = 3;
+            int playerPokemonCurrentLevel = DependencyManager.Instance.GetPlayerPokemon().currentLevel;
+            int minimumEncounterLevel = Mathf.FloorToInt(playerPokemonCurrentLevel * minimumLevelMultiplier);
+            int maximumEncounterLevel = Mathf.FloorToInt(playerPokemonCurrentLevel * maximumLevelMultiplier);
+
+            // when dealing with ints Random.Range returns [min, max)
+            wildPokemon.currentLevel = Random.Range(minimumEncounterLevel, maximumEncounterLevel + 1);
 
             DependencyManager.Instance.SetEnemyPokemon(wildPokemon);
             DependencyManager.Instance.LevelManager.LoadLevelAdditive(DependencyManager.BATTLE_SCENE);

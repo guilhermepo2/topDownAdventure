@@ -83,7 +83,11 @@ namespace CombatSystem {
             m_enemyAI = enemyPokemon.GetComponent<AI.BaseEnemyAI>();
             m_playerPokemon = playerPokemon.GetComponent<BattlePokemon>();
             m_enemyPokemon.CalculateStats(true);
-            m_playerPokemon.CalculateStats(false);
+
+            // [TO DO]
+            // this should be false
+            // using true for debugging...
+            m_playerPokemon.CalculateStats(true);
 
             m_turnStack = new Stack<BattlePokemon>();
             m_feedbackSentences = new Queue<string>();
