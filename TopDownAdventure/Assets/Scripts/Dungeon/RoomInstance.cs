@@ -6,7 +6,6 @@ using UnityEngine.Tilemaps;
 namespace Dungeon {
     public class RoomInstance : MonoBehaviour {
         public Vector2 gridPosition;
-        public Vector2 roomSizeInTiles = new Vector2(9, 17);
         private Vector3 m_offset;
         public Room.ERoomType roomType;
 
@@ -15,8 +14,9 @@ namespace Dungeon {
         private RuleTile m_wallTile;
         private List<Vector3> m_tilePositionList;
         public List<Vector3> TilePositionList { get { return m_tilePositionList;  } }
+        private Vector2 m_roomSizeInTiles;
 
-        public void Setup(Vector2 _gridPosition, Room.ERoomType _roomType, Tilemap _groundTilemap, RuleTile _groundTile, RuleTile _wallTile) {
+        public void Setup(Vector2 _gridPosition, Room.ERoomType _roomType, Tilemap _groundTilemap, RuleTile _groundTile, RuleTile _wallTile, Vector2 _roomSizeInTiles) {
             m_tilePositionList = new List<Vector3>();
 
             this.gridPosition = _gridPosition;
@@ -25,9 +25,10 @@ namespace Dungeon {
             m_groundTilemap = _groundTilemap;
             m_groundTile = _groundTile;
             m_wallTile = _wallTile;
+            m_roomSizeInTiles = _roomSizeInTiles;
 
-            m_offset = new Vector3((-roomSizeInTiles.x + 1),
-                                    ((roomSizeInTiles.y / 4f)),
+            m_offset = new Vector3((-m_roomSizeInTiles.x + 1),
+                                    ((m_roomSizeInTiles.y / 4f)),
                                     0f);
 
             if(roomType == Room.ERoomType.Regular || roomType == Room.ERoomType.Start) {
@@ -38,17 +39,17 @@ namespace Dungeon {
         }
 
         private void GenerateRoomTiles() {
-            for(int x = 0; x < roomSizeInTiles.x; x++) {
-                for(int y = 0; y < roomSizeInTiles.y; y++) {
+            for(int x = 0; x < m_roomSizeInTiles.x; x++) {
+                for(int y = 0; y < m_roomSizeInTiles.y; y++) {
                     GenerateTile(x, y, m_groundTile);
                 }
             }
         }
 
         private void GenerateSpecialRoomTiles() {
-            for (int x = 0; x < (roomSizeInTiles.x); x++) {
-                for (int y = 0; y < (roomSizeInTiles.y); y++) {
-                    if(x == 0 || y == 0 || x == (roomSizeInTiles.x - 1) || y == (roomSizeInTiles.y - 1)) {
+            for (int x = 0; x < (m_roomSizeInTiles.x); x++) {
+                for (int y = 0; y < (m_roomSizeInTiles.y); y++) {
+                    if(x == 0 || y == 0 || x == (m_roomSizeInTiles.x - 1) || y == (m_roomSizeInTiles.y - 1)) {
                         GenerateTile(x, y, m_wallTile);
                     } else {
                         GenerateTile(x, y, m_groundTile);
@@ -72,9 +73,9 @@ namespace Dungeon {
         }
 
         public void AddDoors(bool _up, bool _right, bool _down, bool _left, GameObject _doorPrefab) {
-            int middleWidth = Mathf.FloorToInt(roomSizeInTiles.x / 2);
-            int middleHeight = Mathf.FloorToInt(roomSizeInTiles.y / 2);
-            Vector3 doorOffset = new Vector3(0.5f, 0.25f, 0);
+            int middleWidth = Mathf.FloorToInt(m_roomSizeInTiles.x / 2);
+            int middleHeight = Mathf.FloorToInt(m_roomSizeInTiles.y / 2);
+            Vector3 doorOffset = new Vector3(0.5f, 0.5f, 0);
 
             Debug.Log($"Placing Doors: {_up} {_right} {_down} {_left}");
 
@@ -84,13 +85,13 @@ namespace Dungeon {
             }
 
             if(_right) {
-                PlaceDoorTile((int)roomSizeInTiles.x - 1, middleHeight);
-                InstantiateDoor(_doorPrefab, PositionFromTileGrid((int)roomSizeInTiles.x - 1, middleHeight) + doorOffset);
+                PlaceDoorTile((int)m_roomSizeInTiles.x - 1, middleHeight);
+                InstantiateDoor(_doorPrefab, PositionFromTileGrid((int)m_roomSizeInTiles.x - 1, middleHeight) + doorOffset);
             }
 
             if(_down) {
-                PlaceDoorTile(middleWidth, ((int)roomSizeInTiles.y - 1));
-                InstantiateDoor(_doorPrefab, PositionFromTileGrid(middleWidth, ((int)roomSizeInTiles.y - 1)) + doorOffset);
+                PlaceDoorTile(middleWidth, ((int)m_roomSizeInTiles.y - 1));
+                InstantiateDoor(_doorPrefab, PositionFromTileGrid(middleWidth, ((int)m_roomSizeInTiles.y - 1)) + doorOffset);
             }
 
             if(_left) {
@@ -124,7 +125,7 @@ namespace Dungeon {
 
         public void InstantiateObject(GameObject _prefab, int _x, int _y) {
             Vector3 position = PositionFromTileGrid(_x, _y);
-            Instantiate(_prefab, position + new Vector3(0.5f, 0.25f, 0), Quaternion.identity);
+            Instantiate(_prefab, position + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
         }
     }
 }

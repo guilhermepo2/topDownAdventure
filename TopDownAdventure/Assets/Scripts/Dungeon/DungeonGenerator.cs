@@ -34,7 +34,7 @@ namespace Dungeon {
         public int minimumAmountOfEnemies = 10;
         public int maximumAmountOfEnemies = 20;
 
-        private Vector2 m_roomSizeInTiles = new Vector2(9, 17);
+        private Vector2 m_roomSizeInTiles = new Vector2(8, 8);
         private Room[,] m_rooms;
         private List<Room> m_roomsList;
         private List<RoomInstance> m_roomInstanceList;
@@ -197,7 +197,7 @@ namespace Dungeon {
                 RoomInstance roomInstance = Instantiate(roomPrefab, roomPosition, Quaternion.identity).GetComponent<RoomInstance>();
                 m_roomInstanceList.Add(roomInstance);
                 roomInstance.transform.parent = roomsParent.transform;
-                roomInstance.Setup(room.gridPosition, room.roomType, groundTilemap, groundRuleTile, wallTile);
+                roomInstance.Setup(room.gridPosition, room.roomType, groundTilemap, groundRuleTile, wallTile, m_roomSizeInTiles);
 
                 if(room.roomType == Room.ERoomType.BossRoom || room.roomType == Room.ERoomType.GoalRoom) {
                     bool doorUp = m_takenPositions.Contains(room.gridPosition + Vector2.up);
