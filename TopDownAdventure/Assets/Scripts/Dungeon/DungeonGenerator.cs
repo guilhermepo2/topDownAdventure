@@ -63,14 +63,20 @@ namespace Dungeon {
             Debug.Log("[DUNGEON GENERATOR] Placing Goals...");
             PlaceGoalRoom();
 
-            Debug.Log("[DUNGEON GENERATOR] Placing Instances...");
-            CreateRoomInstances();
+            // Validating...
+            if(IsRoomValid()) {
+                Debug.Log("[DUNGEON GENERATOR] Placing Instances...");
+                CreateRoomInstances();
 
-            Debug.Log("[DUNGEON GENERATOR] Adding Collisions");
-            AddCollisions();
+                Debug.Log("[DUNGEON GENERATOR] Adding Collisions");
+                AddCollisions();
 
-            Debug.Log("[DUNGEON GENERATOR] Instantiating Dungeon Objects");
-            InstantiateObjects();
+                Debug.Log("[DUNGEON GENERATOR] Instantiating Dungeon Objects");
+                InstantiateObjects();
+            } else {
+                ClearLevel();
+                GenerateLevel();
+            }
         }
 
         #region ROOMS
@@ -177,6 +183,31 @@ namespace Dungeon {
                     childrenRoom.roomType = Room.ERoomType.GoalRoom;
                 }
             }
+        }
+        #endregion
+
+        #region VALIDATION
+        private bool IsRoomValid() {
+            int bossRoom = m_roomsList.Where(room => {
+                return room.roomType == Room.ERoomType.BossRoom;
+            }).Count();
+            int goalRoom = m_roomsList.Where(room => {
+                return room.roomType == Room.ERoomType.GoalRoom;
+            }).Count();
+
+            if(bossRoom == 1 && goalRoom == 1) {
+                return true;
+            }
+
+            Debug.Log("Generated Room wasn't valid! Regenerating!");
+            return false;
+        }
+
+        private void ClearLevel() {
+            m_rooms = null;
+            m_roomsList.Clear();
+            m_roomInstanceList.Clear();
+            m_takenPositions.Clear();
         }
         #endregion
 
