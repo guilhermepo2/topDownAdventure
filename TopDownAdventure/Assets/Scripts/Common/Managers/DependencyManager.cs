@@ -15,7 +15,7 @@ public class DependencyManager : MonoBehaviour {
     public AudioClip feedbackClip;
     public AudioClip buttonClickClip;
 
-    // Constant strings for scenes
+    // Constant strings for scenes and configuration
     public static int MAIN_MENU_SCENE = 0;
     public static int TOWN_SCENE = 1;
     public static int DUNGEON_INTRO_SCENE = 2;
@@ -23,9 +23,18 @@ public class DependencyManager : MonoBehaviour {
     public static int BATTLE_SCENE = 4;
     private const string PLAYER_POKEMON = "Player Pokemon";
     private const string ENEMY_POKEMON = "Enemy Pokemon";
+    private const int INITIAL_LEVEL = 5;
 
     private CombatSystem.BattlePokemon m_playerPokemon;
     private CombatSystem.BattlePokemon m_enemyPokemon;
+
+    // Progression Management
+    private int m_currentDungeonDifficulty;
+    public int DungeonDifficulty {
+        get {
+            return m_currentDungeonDifficulty;
+        }
+    }
 
     /*
      * Managers that require some kind of configuration WILL NOT be instantiated by the Dependency Manager! 
@@ -131,10 +140,13 @@ public class DependencyManager : MonoBehaviour {
     private void Start() {
         Debug.Log("Dependency Manager start...");
         m_playerPokemon = GameObject.Find(PLAYER_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
+
         // Calculating Player Pokemon Stats when the game starts because here we want to set it to max health...
         m_playerPokemon.CalculateStats(true);
         m_enemyPokemon = GameObject.Find(ENEMY_POKEMON).GetComponent<CombatSystem.BattlePokemon>();
         SceneManager.sceneLoaded += LevelLoaded;
+
+        m_currentDungeonDifficulty = INITIAL_LEVEL;
 
         FetchDependencies();
     }
@@ -150,6 +162,9 @@ public class DependencyManager : MonoBehaviour {
         } else if(_scene.buildIndex == DUNGEON_INTRO_SCENE) {
             m_soundManager.PlayBackgroundMusic(dungeonClip);
         } else if(_scene.buildIndex == DUNGEON_SCENE) {
+            // every time the dungeon scene is loaded difficulty goes up...
+            m_currentDungeonDifficulty++;
+
             m_soundManager.PlayBackgroundMusic(dungeonClip);
         } else if(_scene.buildIndex == BATTLE_SCENE) {
             m_soundManager.PlayBackgroundMusic(battleTheme);
@@ -169,7 +184,7 @@ public class DependencyManager : MonoBehaviour {
 
     // ----------------------------------------------------------------------------
     // Handling Pokemons on the Dependency Manager
-
+    // ----------------------------------------------------------------------------
     public void SetEnemyPokemon(CombatSystem.BattlePokemon _pokemon) {
         m_enemyPokemon.basePokemon = _pokemon.basePokemon;
         m_enemyPokemon.individualValues = _pokemon.individualValues;
@@ -195,7 +210,14 @@ public class DependencyManager : MonoBehaviour {
     }
 
     // -------------------------------------------------------------------------------
+    // General Game Management
+    // -------------------------------------------------------------------------------
     public void RestartGame() {
+        // Restarting Variables
+        m_currentDungeonDifficulty = INITIAL_LEVEL;
+        m_playerPokemon.currentLevel = 0;
+        m_playerPokemon.currentExperience = 0;
+
         m_playerPokemon.CalculateStats(true);
         m_levelManagerReference.LoadLevel(MAIN_MENU_SCENE);
     }

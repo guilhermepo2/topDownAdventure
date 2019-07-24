@@ -78,6 +78,10 @@ namespace CombatSystem {
             if(currentExperience >= experienceToNextLevel && currentLevel < 100) {
                 currentLevel++;
                 currentExperience = (currentExperience - experienceToNextLevel);
+
+                m_inBattleStats = CombatFunctions.CalculateInBattleStats(basePokemon.baseStats, individualValues, effortValues, currentLevel);
+                currentHealth = m_inBattleStats.maxHp;
+
                 return true;
             }
 

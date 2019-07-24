@@ -87,7 +87,7 @@ namespace CombatSystem {
             // [TO DO]
             // this should be false
             // using true for debugging...
-            m_playerPokemon.CalculateStats(true);
+            m_playerPokemon.CalculateStats(false);
 
             m_turnStack = new Stack<BattlePokemon>();
             m_feedbackSentences = new Queue<string>();

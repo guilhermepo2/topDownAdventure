@@ -24,10 +24,9 @@ namespace Dungeon {
             wildPokemon.individualValues = ivPool.RandomOrDefault();
             wildPokemon.effortValues = evPool.RandomOrDefault();
 
-            // Do Stuff with the level Here....
-            int playerPokemonCurrentLevel = DependencyManager.Instance.GetPlayerPokemon().currentLevel;
-            int minimumEncounterLevel = Mathf.FloorToInt(playerPokemonCurrentLevel * minimumLevelMultiplier);
-            int maximumEncounterLevel = Mathf.FloorToInt(playerPokemonCurrentLevel * maximumLevelMultiplier);
+            int currentDifficultyLevel = DependencyManager.Instance.DungeonDifficulty;
+            int minimumEncounterLevel = Mathf.FloorToInt(currentDifficultyLevel * minimumLevelMultiplier);
+            int maximumEncounterLevel = Mathf.FloorToInt(currentDifficultyLevel * maximumLevelMultiplier);
 
             // when dealing with ints Random.Range returns [min, max)
             wildPokemon.currentLevel = Random.Range(minimumEncounterLevel, maximumEncounterLevel + 1);
