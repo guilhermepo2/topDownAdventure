@@ -22,7 +22,7 @@ namespace CombatSystem {
 
         public enum EOptionsToSelect {
             FIGHT,
-            PKMN,
+            DEFEND,
             PACK,
             RUN,
         }
@@ -70,6 +70,9 @@ namespace CombatSystem {
 
         // Dialogue Feedback
         private Queue<string> m_feedbackSentences;
+
+        // Constants
+        private const float km_defendedMoveMultiplier = 0.35f;
 
         private void Start() {
             // Checking if it was transitioned from Dungeon
@@ -167,22 +170,22 @@ namespace CombatSystem {
                 if(m_currentlySelectedOption == EOptionsToSelect.PACK) {
                     m_currentlySelectedOption = EOptionsToSelect.FIGHT;
                 } else if(m_currentlySelectedOption == EOptionsToSelect.RUN) {
-                    m_currentlySelectedOption = EOptionsToSelect.PKMN;
+                    m_currentlySelectedOption = EOptionsToSelect.DEFEND;
                 }
             } else if(Input.GetKeyDown(KeyCode.S)) {
                 if(m_currentlySelectedOption == EOptionsToSelect.FIGHT) {
                     m_currentlySelectedOption = EOptionsToSelect.PACK;
-                } else if(m_currentlySelectedOption == EOptionsToSelect.PKMN) {
+                } else if(m_currentlySelectedOption == EOptionsToSelect.DEFEND) {
                     m_currentlySelectedOption = EOptionsToSelect.RUN;
                 }
             } else if(Input.GetKeyDown(KeyCode.D)) {
                 if (m_currentlySelectedOption == EOptionsToSelect.FIGHT) {
-                    m_currentlySelectedOption = EOptionsToSelect.PKMN;
+                    m_currentlySelectedOption = EOptionsToSelect.DEFEND;
                 } else if (m_currentlySelectedOption == EOptionsToSelect.PACK) {
                     m_currentlySelectedOption = EOptionsToSelect.RUN;
                 }
             } else if(Input.GetKeyDown(KeyCode.A)) {
-                if (m_currentlySelectedOption == EOptionsToSelect.PKMN) {
+                if (m_currentlySelectedOption == EOptionsToSelect.DEFEND) {
                     m_currentlySelectedOption = EOptionsToSelect.FIGHT;
                 } else if (m_currentlySelectedOption == EOptionsToSelect.RUN) {
                     m_currentlySelectedOption = EOptionsToSelect.PACK;
@@ -194,25 +197,25 @@ namespace CombatSystem {
                 case EOptionsToSelect.FIGHT:
                     fightText.text = "> FIGHT";
                     packText.text = "PACK";
-                    pkmnText.text = "PKMN";
+                    pkmnText.text = "DEFEND";
                     runText.text = "RUN";
                     break;
                 case EOptionsToSelect.PACK:
                     fightText.text = "FIGHT";
                     packText.text = "> PACK";
-                    pkmnText.text = "PKMN";
+                    pkmnText.text = "DEFEND";
                     runText.text = "RUN";
                     break;
-                case EOptionsToSelect.PKMN:
+                case EOptionsToSelect.DEFEND:
                     fightText.text = "FIGHT";
                     packText.text = "PACK";
-                    pkmnText.text = "> PKMN";
+                    pkmnText.text = "> DEFEND";
                     runText.text = "RUN";
                     break;
                 case EOptionsToSelect.RUN:
                     fightText.text = "FIGHT";
                     packText.text = "PACK";
-                    pkmnText.text = "PKMN";
+                    pkmnText.text = "DEFEND";
                     runText.text = "> RUN";
                     break;
             }
@@ -229,8 +232,10 @@ namespace CombatSystem {
                     case EOptionsToSelect.PACK:
                         // TO DO
                         break;
-                    case EOptionsToSelect.PKMN:
-                        // TO DO
+                    case EOptionsToSelect.DEFEND:
+                        m_selectedMoveIndex = 5;
+                        m_combatState = ECombatState.ResolveTurns;
+                        playerOptionsPanel.SetActive(false);
                         break;
                     case EOptionsToSelect.RUN:
                         playerOptionsPanel.SetActive(false);
@@ -340,7 +345,10 @@ namespace CombatSystem {
         private void ResolveTurns() {
             m_turnStack.Clear();
 
-            if(m_playerPokemon.BattleStats.speed >= m_enemyPokemon.BattleStats.speed) {
+            // Player is Defending...
+            if(m_selectedMoveIndex == 5) {
+                m_turnStack.Push(m_enemyPokemon);
+            } else if(m_playerPokemon.BattleStats.speed >= m_enemyPokemon.BattleStats.speed) {
                 m_turnStack.Push(m_enemyPokemon);
                 m_turnStack.Push(m_playerPokemon);
             } else {
@@ -356,6 +364,7 @@ namespace CombatSystem {
         private void ProcessTurnStack() {
             BattlePokemon pokemonTakingTurn = m_turnStack.Pop();
             BattlePokemon pokemonBeingActedOn;
+            float damageMultiplier = 1.0f;
 
             if(pokemonTakingTurn.currentHealth <= 0) {
                 battleLogText.text = $"{pokemonTakingTurn.PokemonName} fainted!";
@@ -371,13 +380,24 @@ namespace CombatSystem {
             } else {
                 performedMove = m_enemyAI.SelectMovement();
                 pokemonBeingActedOn = m_playerPokemon;
+
+                if(m_selectedMoveIndex == 5) {
+                    damageMultiplier = km_defendedMoveMultiplier;
+                }
             }
 
             switch (performedMove.moveCategory) {
                 case Data.Move.EDamageCategory.Physical:
                     int damage = CombatFunctions.CalculateDamage(pokemonTakingTurn.currentLevel, performedMove.movePower, pokemonTakingTurn.BattleStats.attack, pokemonBeingActedOn.BattleStats.defense);
-                    battleLogText.text = $"{pokemonTakingTurn.PokemonName} caused {damage} damage!";
-                    pokemonBeingActedOn.currentHealth = Mathf.Max(0, pokemonBeingActedOn.currentHealth - damage);
+                    int damageMultiplied = Mathf.RoundToInt(damage * damageMultiplier);
+
+                    if(damageMultiplied < damage) {
+                        battleLogText.text = $"{pokemonTakingTurn.PokemonName} caused {damageMultiplied} damage, {pokemonBeingActedOn.PokemonName} defended!";
+                    } else {
+                        battleLogText.text = $"{pokemonTakingTurn.PokemonName} caused {damageMultiplied} damage!";
+                    }
+
+                    pokemonBeingActedOn.currentHealth = Mathf.Max(0, pokemonBeingActedOn.currentHealth - damageMultiplied);
                     break;
                 case Data.Move.EDamageCategory.Special:
                     // NOT IMPLEMENTED
