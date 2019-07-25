@@ -258,19 +258,19 @@ namespace CombatSystem {
             }
 
             if (m_playerPokemon.pokemonMoves[1] != null) {
-                secondMove.text = m_playerPokemon.pokemonMoves[0].moveName;
+                secondMove.text = m_playerPokemon.pokemonMoves[1].moveName;
             } else {
                 secondMove.text = "-";
             }
 
             if (m_playerPokemon.pokemonMoves[2] != null) {
-                thirdMove.text = m_playerPokemon.pokemonMoves[0].moveName;
+                thirdMove.text = m_playerPokemon.pokemonMoves[2].moveName;
             } else {
                 thirdMove.text = "-";
             }
 
             if (m_playerPokemon.pokemonMoves[3] != null) {
-                fourthMove.text = m_playerPokemon.pokemonMoves[0].moveName;
+                fourthMove.text = m_playerPokemon.pokemonMoves[3].moveName;
             } else {
                 fourthMove.text = "-";
             }
@@ -386,10 +386,14 @@ namespace CombatSystem {
                 }
             }
 
+            Debug.Log($"Debugging Purposes {CombatFunctions.damageMultiplierByType[(int)pokemonTakingTurn.basePokemon.pokemonType, (int)pokemonBeingActedOn.basePokemon.pokemonType]}");
+            int damage = 0;
+            int damageMultiplied = 0;
+
             switch (performedMove.moveCategory) {
                 case Data.Move.EDamageCategory.Physical:
-                    int damage = CombatFunctions.CalculateDamage(pokemonTakingTurn.currentLevel, performedMove.movePower, pokemonTakingTurn.BattleStats.attack, pokemonBeingActedOn.BattleStats.defense);
-                    int damageMultiplied = Mathf.RoundToInt(damage * damageMultiplier);
+                    damage = CombatFunctions.CalculateDamage(pokemonTakingTurn.currentLevel, performedMove.movePower, pokemonTakingTurn.BattleStats.attack, pokemonBeingActedOn.BattleStats.defense);
+                    damageMultiplied = Mathf.RoundToInt(damage * damageMultiplier);
 
                     if(damageMultiplied < damage) {
                         battleLogText.text = $"{pokemonTakingTurn.PokemonName} caused {damageMultiplied} damage, {pokemonBeingActedOn.PokemonName} defended!";
@@ -400,9 +404,19 @@ namespace CombatSystem {
                     pokemonBeingActedOn.currentHealth = Mathf.Max(0, pokemonBeingActedOn.currentHealth - damageMultiplied);
                     break;
                 case Data.Move.EDamageCategory.Special:
-                    // NOT IMPLEMENTED
+                    damage = CombatFunctions.CalculateDamage(pokemonTakingTurn.currentLevel, performedMove.movePower, pokemonTakingTurn.BattleStats.specialAttack, pokemonBeingActedOn.BattleStats.specialDefense);
+                    damageMultiplied = Mathf.RoundToInt(damage * CombatFunctions.damageMultiplierByType[(int)performedMove.moveType, (int)pokemonBeingActedOn.basePokemon.pokemonType]);
+
+                    if(damageMultiplied > damage) {
+                        battleLogText.text = $"{pokemonTakingTurn.PokemonName} caused {damageMultiplied} damage! It's super effective!";
+                    } else {
+                        battleLogText.text = $"{pokemonTakingTurn.PokemonName} caused {damageMultiplied} damage!";
+                    }
+
+                    pokemonBeingActedOn.currentHealth = Mathf.Max(0, pokemonBeingActedOn.currentHealth - damageMultiplied);
                     break;
                 case Data.Move.EDamageCategory.Status:
+                    Debug.Log("Using Status Attack...");
                     // NOT IMPLEMENTED
                     break;
             }

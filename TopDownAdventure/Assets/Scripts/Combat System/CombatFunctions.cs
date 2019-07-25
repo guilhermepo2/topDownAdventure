@@ -4,6 +4,46 @@ using UnityEngine;
 
 namespace CombatSystem {
     public static class CombatFunctions {
+        public static float[,] damageMultiplierByType = new float[,]
+        {
+            // Normal
+            { 1, 1, 1, 1, 1, 0.5f, 1, 0, 0.5f, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+            // Fight
+            { 2, 1, .5f, .5f, 1, 2, .5f, 0, 2, 1, 1, 1, 1, .5f, 2, 1, 2, .5f },
+            // Flying
+            { 1, 2, 1, 1, 1, .5f, 2, 1, .5f, 1, 1, 2, .5f, 1, 1, 1, 1, 1 },
+            // Poison
+            { 1, 1, 1, .5f, .5f, .5f, 1, .5f, 0, 1, 1, 2, 1, 1, 1, 1, 1, 2 },
+            // Ground
+            { 1, 1, 0, 2, 1, 2, .5f, 1, 2, 2, 1, .5f, 2, 1, 1, 1, 1, 1 },
+            // Rock
+            { 1, .5f, 2, 1, .5f, 1, 2, 1, .5f, 2, 1, 1, 1, 1, 2, 1, 1, 1 },
+            // Bug
+            { 1, .5f, .5f, .5f, 1, 1, 1, .5f, .5f, .5f, 1, 2, 1, 2, 1, 1, 2, .5f },
+            // Ghost
+            { 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, .5f, 1 },
+            // Steel
+            { 1, 1, 1, 1, 1, 2, 1, 1, .5f, .5f, .5f, 1, .5f, 1, 2, 1, 1, 2 },
+            // Fire
+            { 1, 1, 1, 1, 1, .5f, 2, 1, 2, .5f, .5f, 2, 1, 1, 2, .5f, 1, 1, },
+            // Water
+            { 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, .5f, .5f, 1, 1, 1, .5f, 1, 1 },
+            // Grass
+            { 1, 1, .5f, .5f, 2, 2, .5f, 1, .5f, .5f, 2, .5f, 1, 1, 1, .5f, 1, 1 },
+            // Electric
+            { 1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 2, .5f, .5f, 1, 1, .5f, 1, 1 },
+            // Psychic
+            { 1, 2, 1, 2, 1, 1, 1, 1, .5f, 1, 1, 1, 1, .5f, 1, 1, 0, 1 },
+            // Ice
+            { 1, 1, 2, 1, 2, 1, 1, 1, .5f, .5f, .5f, 2, 1, 1, .5f, 2, 1, 1 },
+            // Dragon
+            { 1, 1, 1, 1, 1, 1, 1, 1, .5f, 1, 1, 1, 1, 1, 1, 2, 1, 0 },
+            // Dark
+            { 1, .5f, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, .5f, .5f },
+            // Fairy
+            { 1, 2, 1, .5f, 1, 1, 1, 1, .5f, .5f, 1, 1, 1, 1, 1, 2, 2, 1 }
+        };
+
         public static Data.InBattleStats CalculateInBattleStats(Data.Stats _baseStats, Data.Stats _iv, Data.Stats _ev, int _level) {
             Data.InBattleStats pokemonInBattleStats = new Data.InBattleStats();
 

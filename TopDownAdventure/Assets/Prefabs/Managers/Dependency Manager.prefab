@@ -491,7 +491,7 @@ MonoBehaviour:
   effortValues: {fileID: 11400000, guid: ddac71e88fcb7bf4a876e6f34f82b4bf, type: 2}
   pokemonMoves:
   - {fileID: 11400000, guid: 03e989dddf4f67842a72a8605394e037, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: fe5018c25d0793a4b812a940990653b5, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   currentLevel: 5
