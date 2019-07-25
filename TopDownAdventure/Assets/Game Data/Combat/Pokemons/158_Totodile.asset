@@ -20,3 +20,4 @@ MonoBehaviour:
   baseStats: {fileID: 11400000, guid: e6bb7e74253f08948b63cbc82fc4a570, type: 2}
   baseExperience: 63
   experienceType: 2
+  pokemonType: 3
