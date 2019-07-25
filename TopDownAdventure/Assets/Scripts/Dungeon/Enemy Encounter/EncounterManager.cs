@@ -7,6 +7,7 @@ namespace Dungeon {
 
         [Header("Encounter - Pokemons and IV/EV")]
         public CombatSystem.Pokemon[] wildPokemons;
+        public CombatSystem.Pokemon[] bossPokemons;
         public CombatSystem.Data.Stats[] ivPool;
         public CombatSystem.Data.Stats[] evPool;
 
@@ -32,6 +33,20 @@ namespace Dungeon {
             wildPokemon.currentLevel = Random.Range(minimumEncounterLevel, maximumEncounterLevel + 1);
 
             DependencyManager.Instance.SetEnemyPokemon(wildPokemon);
+            DependencyManager.Instance.LevelManager.LoadLevelAdditive(DependencyManager.BATTLE_SCENE);
+        }
+
+        public void ProcessBossEncounter() {
+            DependencyManager.Instance.TopDown.HaltTopDown();
+
+            // Boss
+            CombatSystem.BattlePokemon bossPokemon = DependencyManager.Instance.GetEnemyPokemon();
+            bossPokemon.basePokemon = bossPokemons.RandomOrDefault();
+            bossPokemon.individualValues = ivPool.RandomOrDefault();
+            bossPokemon.effortValues = evPool.RandomOrDefault();
+            bossPokemon.currentLevel = DependencyManager.Instance.DungeonDifficulty;
+
+            DependencyManager.Instance.SetEnemyPokemon(bossPokemon);
             DependencyManager.Instance.LevelManager.LoadLevelAdditive(DependencyManager.BATTLE_SCENE);
         }
     }

@@ -7,8 +7,9 @@ namespace Dungeon {
         public GameObject goalRoomKey;
 
         public override void ProcessEncounter() {
+            DependencyManager.Instance.Encounter.ProcessBossEncounter();
             Instantiate(goalRoomKey, transform.position, Quaternion.identity);
-            base.ProcessEncounter();
+            Destroy(gameObject);
         }
     }
 }

@@ -23,7 +23,7 @@ public class DependencyManager : MonoBehaviour {
     public static int BATTLE_SCENE = 4;
     private const string PLAYER_POKEMON = "Player Pokemon";
     private const string ENEMY_POKEMON = "Enemy Pokemon";
-    private const int INITIAL_LEVEL = 5;
+    private const int INITIAL_LEVEL = 4;
 
     private CombatSystem.BattlePokemon m_playerPokemon;
     private CombatSystem.BattlePokemon m_enemyPokemon;
@@ -215,7 +215,7 @@ public class DependencyManager : MonoBehaviour {
     public void RestartGame() {
         // Restarting Variables
         m_currentDungeonDifficulty = INITIAL_LEVEL;
-        m_playerPokemon.currentLevel = 0;
+        m_playerPokemon.currentLevel = 5;
         m_playerPokemon.currentExperience = 0;
 
         m_playerPokemon.CalculateStats(true);

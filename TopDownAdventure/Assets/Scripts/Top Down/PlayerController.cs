@@ -220,7 +220,6 @@ public class PlayerController : MonoBehaviour {
             }
         } else if(enemyEncounter != null) {
             enemyEncounter.ProcessEncounter();
-            DependencyManager.Instance.Encounter.ProcessEncounter();
         }
     }
 

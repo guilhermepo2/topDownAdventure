@@ -14,6 +14,7 @@ namespace Dungeon {
         }
 
         public virtual void ProcessEncounter() {
+            DependencyManager.Instance.Encounter.ProcessEncounter();
             Destroy(gameObject);
         }
 
