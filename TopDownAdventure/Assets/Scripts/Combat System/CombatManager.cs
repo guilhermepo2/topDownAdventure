@@ -416,8 +416,13 @@ namespace CombatSystem {
                     pokemonBeingActedOn.currentHealth = Mathf.Max(0, pokemonBeingActedOn.currentHealth - damageMultiplied);
                     break;
                 case Data.Move.EDamageCategory.Status:
-                    Debug.Log("Using Status Attack...");
-                    // NOT IMPLEMENTED
+                    // [TO DO]
+                    // How exactly to implement this?
+                    // Check for every possible status movement and have code for each one?
+                    if(performedMove.moveName == "LEER") {
+                        pokemonBeingActedOn.BattleStats.defense = Mathf.RoundToInt((pokemonBeingActedOn.BattleStats.defense * (2.0f / 3.0f) ));
+                        battleLogText.text = $"{pokemonTakingTurn.PokemonName} used LEER! {pokemonBeingActedOn.PokemonName} defense fell!";
+                    }
                     break;
             }
 

@@ -4001,6 +4001,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7867406971019292322, guid: b9478f0f002fdc744accd13b124d75ef,
+        type: 3}
+      propertyPath: pokemonMoves.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 43023b4042ddbc54e9146552d809e7c7,
+        type: 2}
+    - target: {fileID: 7867406971019292320, guid: b9478f0f002fdc744accd13b124d75ef,
+        type: 3}
+      propertyPath: pokemonMoves.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 43023b4042ddbc54e9146552d809e7c7,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b9478f0f002fdc744accd13b124d75ef, type: 3}
 --- !u!1 &2012474266
